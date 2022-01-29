@@ -1,0 +1,40 @@
+@import "../../style";
+
+.dock {
+  width: 100vw;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: $maxAppZIndex + 1;
+
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dock-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+
+  .dock-center {
+    position: relative;
+
+
+    pointer-events: auto;
+  }
+
+  .dock-offset {
+    background: red;
+    pointer-events: none;
+  }
+
+  .dock-background {
+    width: 100%;
+    box-sizing: border-box;
+    position: absolute;
+
+    border-radius: $radius1;
+    box-shadow: $shadow3;
+    @include glassBackground;
+  }
+}

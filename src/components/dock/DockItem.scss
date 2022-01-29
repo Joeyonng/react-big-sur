@@ -1,0 +1,42 @@
+@import "../../style";
+
+.dock-item-container {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .dock-item-tooltip {
+    position: absolute;
+    top: -$height3;
+  }
+
+  .dock-item {
+    padding: $space4 0 $space3 0;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .dock-item-icon {
+      height: 100%;
+
+      &:active {
+        filter: $filterDarken;
+      }
+    }
+  }
+
+  .dock-item-indicator {
+    width: $height15;
+    height: $height15;
+    position: absolute;
+    bottom: $space7;
+
+    border-radius: 100%;
+    background-color: $black;
+  }
+}
