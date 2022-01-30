@@ -1,7 +1,9 @@
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useState} from "react";
+import {useEnsuredForwardedRef} from "react-use";
+
 import * as style from "../../style";
 
-const MenuButtonGroup = forwardRef((props) => {
+const MenuButtonGroup = forwardRef((props, ref) => {
   const {classNames, styles, children, ...curProps} = props;
   const {reverse, ...rootProps} = curProps;
 
@@ -9,10 +11,10 @@ const MenuButtonGroup = forwardRef((props) => {
     openIndex: -1,
   })
 
-  const ref = useRef(null);
+  const menuButtonGroupRef = useEnsuredForwardedRef(ref);
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
+      if (menuButtonGroupRef.current && !menuButtonGroupRef.current.contains(e.target)) {
         setState({...state, openIndex: -1});
       }
     }
@@ -24,7 +26,7 @@ const MenuButtonGroup = forwardRef((props) => {
 
   return (
     <div
-      ref={ref}
+      ref={menuButtonGroupRef}
       className="menu-button-group"
       style={{
       }}

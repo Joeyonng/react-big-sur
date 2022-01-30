@@ -8,7 +8,7 @@ import "./DockItem.scss"
 
 function DockItem(props) {
   const {classNames, styles, children, ...curProps} = props;
-  const {size, name, onClick, running, debug, ...rootProps} = curProps;
+  const {size, baseSize, name, running, onClick, debug, ...rootProps} = curProps;
 
   const [state, setState] = useState({
     hover: false,
@@ -46,6 +46,8 @@ function DockItem(props) {
         style={{
           width: size,
           height: size,
+          margin: baseSize / 32,
+          padding: baseSize / 32 * 3,
           border: debug ? style.divider : null,
           transform: spring.y.to({
             range: [0, 0.166, 0.333, 0.499, 0.665, 0.831, 1],
@@ -63,6 +65,9 @@ function DockItem(props) {
         {React.Children.map(props.children, (item) => (
           React.cloneElement(item, {
             className: "dock-item-icon",
+            style: {
+              border: debug ? style.divider : null,
+            }
           })
         ))}
       </animated.div>

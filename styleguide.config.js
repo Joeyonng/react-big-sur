@@ -20,7 +20,7 @@ module.exports = {
           use: ['@svgr/webpack', 'url-loader'],
         },
       ]
-    }
+    },
   },
   title: 'React Big Sur',
   exampleMode: 'expand',

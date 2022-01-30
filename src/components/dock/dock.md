@@ -1,6 +1,7 @@
 ```jsx
 import {useState} from "react";
-import DockContainer from "./Dock";
+import Dock from "./Dock";
+import DockContainer from "./DockContainer";
 import DockItem from "./DockItem";
 import Button from "../buttons/Button";
 
@@ -33,55 +34,66 @@ const allApps = [
 ]
 const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
 
-<div className="row">
-  <Button 
+<div 
+  className="canvas background"
+>
+  <Button
     onClick={() => {
       let randomIndex = Math.floor(Math.random() * choices.length);
       let newChoices = [...choices];
-      // newChoices.splice(randomIndex, 0, Math.max(...choices) + 1);
-      newChoices.splice(randomIndex, 1);
+      newChoices.splice(randomIndex, 0, Math.max(...choices) + 1);
+      // newChoices.splice(randomIndex, 1);
       setChoices(newChoices);
     }}
   >
     Random
   </Button>
-  
-  <div
-    style={{
-      width: '100vw',
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      display: 'flex',
-      justifyContent: 'center',
-      pointerEvents: 'none',
-      zIndex: 10,
-    }}
+
+  <Dock
+    tileSize={64}
+    largeSize={128}
+    orientation="top"
+    debug={false}
   >
-    <DockContainer
-      itemSize={64}
-      spreading={1.5}
-      magnification={1}
-      magnifyDirection="up"
-      debug={true}
-    >
-      {choices.map((choice, index) =>
-        <DockItem
-          key={allApps[choice].name}
-          id={allApps[choice].name}
-          name={allApps[choice].name}
-          running={true}
-          onClick={() => {
-            let newChoices = [...choices];
-            newChoices.splice(index, 0, Math.max(...choices) + 1);
-            // newChoices.splice(index, 1);
-            setChoices(newChoices);
-          }}
-        >
-          <img src={allApps[choice].icon} />
-        </DockItem>
-      )}
-    </DockContainer>
-  </div>
+    {choices.map((choice, index) =>
+      <DockItem
+        key={allApps[choice].name}
+        id={allApps[choice].name}
+        name={allApps[choice].name}
+        onClick={() => {
+          let newChoices = [...choices];
+          newChoices.splice(index, 0, Math.max(...choices) + 1);
+          // newChoices.splice(index, 1);
+          setChoices(newChoices);
+        }}
+      >
+        <img src={allApps[choice].icon}/>
+      </DockItem>
+    )}
+  </Dock>
+  
+  <Dock
+    tileSize={64}
+    largeSize={128}
+    orientation="bottom"
+    debug={false}
+  >
+    {choices.map((choice, index) =>
+      <DockItem
+        key={allApps[choice].name}
+        id={allApps[choice].name}
+        name={allApps[choice].name}
+        running={true}
+        onClick={() => {
+          let newChoices = [...choices];
+          newChoices.splice(index, 0, Math.max(...choices) + 1);
+          // newChoices.splice(index, 1);
+          setChoices(newChoices);
+        }}
+      >
+        <img src={allApps[choice].icon}/>
+      </DockItem>
+    )}
+  </Dock>
 </div>
 ```

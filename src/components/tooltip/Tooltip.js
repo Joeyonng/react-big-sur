@@ -55,7 +55,7 @@ const Tooltip = forwardRef((props, ref) => {
 });
 
 Tooltip.propTypes = {
-  placement: PropTypes.oneOf('top', 'right', 'bottom', 'left'),
+  placement: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
 }
 
 Tooltip.defaultProps = {

@@ -13,7 +13,7 @@ const Collapse = forwardRef((props, ref) => {
     contentHeight: 0,
   });
 
-  const [contentRef, contentMeasure] = useMeasure()
+  const [contentMeasureRef, contentMeasure] = useMeasure()
 
   const spring = useSpring({
     contentHeight: open ? state.contentHeight : 0,
@@ -34,7 +34,7 @@ const Collapse = forwardRef((props, ref) => {
       {...rootProps}
     >
       <animated.div
-        ref={contentRef}
+        ref={contentMeasureRef}
         style={{
           transform: spring.contentHeight.to(x => `translateY(${-(state.contentHeight - x)}px)`),
         }}

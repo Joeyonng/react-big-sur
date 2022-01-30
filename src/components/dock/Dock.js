@@ -1,129 +1,48 @@
-import React, {useRef, useState} from "react";
-import {animated, useSpring, useTransition, to} from "react-spring";
+import React, {useEffect, useRef, useState} from "react";
+
+import DockContainer from "./DockContainer";
 
 import * as style from "../../style";
 import "./Dock.scss"
-import {useMouseHovered, usePrevious, useWindowSize} from "react-use";
 
-function DockContainer(props) {
-
+function Dock(props) {
   const {classNames, styles, children, ...curProps} = props;
-  const {itemSize, spreading, magnification, magnifyDirection, debug, ...rootProps} = curProps;
-  const magnifyStyle = {
-    'up': {alignItems: 'end'},
-    'down': {alignItems: 'start'},
-    'center': {alignItems: 'center'}
-  }[magnifyDirection]
+  const {tileSize, largeSize, orientation, debug, ...rootProps} = curProps;
+  const ref = useRef();
 
-  // Helper functions
-  const sumDockItemSizes = (itemWidths = []) => {
-    return itemWidths.reduce((sum, itemWidth) => sum + itemWidth, 0);
-  }
-
-  const getMaxDockWidthDiff = () => {
-    const minWidth = getDockWidth(null);
-    const maxWidth = getDockWidth(minWidth / 2);
-
-    return maxWidth - minWidth;
-  }
-
-  const getDockItemSize = (magnifierX, index) => {
-    if (magnifierX === null) return itemSize;
-
-    let defaultDockItemSizes = getDockItemSizes(null);
-    let itemCenter = sumDockItemSizes(defaultDockItemSizes.slice(0, index)) + (itemSize / 2);
-    let distance = Math.abs(magnifierX - itemCenter);
-    let distancePercent = Math.max(1 - (distance / (itemSize * spreading)), 0);
-    return itemSize + (itemSize * distancePercent * magnification);
-  }
-
-  const getDockItemSizes = (magnifierX) => {
-    return React.Children.map(children, (item, index) => item ? getDockItemSize(magnifierX, index) : 0);
-  }
-
-  const getDockWidth = (magnifierX) => {
-    return sumDockItemSizes(getDockItemSizes(magnifierX));
-  }
-
-  const getDockOffset = (magnifierX, left) => {
-    // The dock's width will be maximum when the mouse is magnifying the center of it.
-    const maxMagnifiedDockWidth = getDockWidth(getDockWidth(null) / 2)
-    const dockOffset = Math.abs(maxMagnifiedDockWidth - getDockWidth(magnifierX));
-    if (magnifierX === null) return dockOffset / 2;
-
-    const passMiddle = magnifierX >= getDockWidth(null) / 2;
-    return (left && !passMiddle) || (!left && passMiddle) ? dockOffset : 0;
-  }
-
-  // React states and Spring states
   const [state, setState] = useState({
-    magnifierX: null,
+    centerX: null,
   });
 
-  const spring = useSpring({
-    ...Object.fromEntries(children.map((item, index) => [item.props.id, getDockItemSize(state.magnifierX, index)])),
-    config: {tension: 500, clamp: true},
-  });
+  useEffect(() => {
+    if (ref) {
+      setState(state => ({
+        ...state,
+        centerX: ref.current.getBoundingClientRect().x + ref.current.getBoundingClientRect().width / 2
+      }));
+    }
+  }, [ref]);
 
-  const springTransitions = useTransition(React.Children.map(children, child => child), {
-    keys: item => item.props.id,
-    from: () => ({scale: 0}),
-    enter: () => ({scale: 1}),
-    leave: () => ({scale: 0}),
-  });
-
-  const dockRef = useRef();
-  const centerRef = useRef();
-  const {width, height} = useWindowSize();
-
-  // noinspection ConstantConditionalExpressionJS
   return (
     <div
-      ref={dockRef}
-      className="dock-container"
+      ref={ref}
+      className="dock"
+      style={{
+        ...{top: {top: 0}, bottom: {bottom: 0}}[orientation],
+      }}
     >
-      <div
-        ref={centerRef}
-        className="dock-center"
-        style={{
-          display: "flex",
-          ...magnifyStyle,
-        }}
-        onMouseMove={(event) => {
-          let magnifierX = event.pageX - (width - getDockWidth(null)) / 2;
-          setState({...state, magnifierX: magnifierX >= 0 && magnifierX < getDockWidth(null) ? magnifierX : null, pageX: event.pageX});
-        }}
-        onMouseLeave={() => {
-          setState({...state, magnifierX: null});
-        }}
+      <DockContainer
+        centerX={state.centerX}
+        itemSize={tileSize}
+        largeSize={largeSize}
+        spreading={3.25}
+        direction={{"top": "down", "bottom": "up"}[orientation]}
+        debug={debug}
       >
-        <div
-          className="dock-background"
-          style={{
-            height: itemSize,
-            border: debug ? style.divider : null,
-            ...magnifyStyle,
-          }}
-        />
-
-        {[true, false][1] ?
-          React.Children.map(props.children, (item, index) => (
-            !React.isValidElement(item) ? null :
-              React.cloneElement(item, {
-                size: spring[item.props.id],
-                debug: debug,
-              })
-          )) :
-          springTransitions((springTransition, item) => {
-            return React.cloneElement(item, {
-              size: to([spring[item.props.id], springTransition.scale], (size, scale) => size * scale),
-              debug: debug,
-            })
-          })
-        }
-      </div>
+        {children}
+      </DockContainer>
     </div>
   );
 }
 
-export default DockContainer;
+export default Dock;

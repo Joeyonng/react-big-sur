@@ -62,6 +62,7 @@ export const space4 = "10px";
 export const space5 = "8px";
 export const space6 = "6px";
 export const space7 = "4px";
+export const space8 = "2px";
 
 export const font1 = "26px";
 export const font2 = "22px";

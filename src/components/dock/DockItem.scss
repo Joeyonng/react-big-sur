@@ -14,7 +14,8 @@
   }
 
   .dock-item {
-    padding: $space4 0 $space3 0;
+    //padding: $space3;
+    //margin: $space7;
     box-sizing: border-box;
 
     display: flex;
@@ -33,8 +34,6 @@
   .dock-item-indicator {
     width: $height15;
     height: $height15;
-    position: absolute;
-    bottom: $space7;
 
     border-radius: 100%;
     background-color: $black;

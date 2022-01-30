@@ -1,0 +1,35 @@
+@import "../../style";
+
+.dock-container {
+  padding: $space8;
+  position: relative;
+
+  display: flex;
+  pointer-events: auto;
+
+  .dock-background {
+    width: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    border-radius: $radius1;
+    box-shadow: $shadow3;
+    @include glassBackground;
+  }
+}
+
+.dock-container-test {
+  padding: $space8;
+  box-sizing: border-box;
+  position: relative;
+
+  display: flex;
+
+  border-radius: $radius1;
+  box-shadow: $shadow3;
+  @include glassBackground;
+
+  pointer-events: auto;
+}

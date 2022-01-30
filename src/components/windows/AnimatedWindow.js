@@ -67,6 +67,7 @@ const AnimatedWindow = forwardRef((props, ref) => {
 
   let rndRef = useRef(null);
   let dragRef = useRef(null);
+  // TODO useEnsuredForwardedRef
   useEffect(() => {
     if (ref) ref.current = rndRef.current
   }, [ref, rndRef])
