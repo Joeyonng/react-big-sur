@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   webpackConfig: {
     module: {
@@ -28,6 +30,10 @@ module.exports = {
   tocMode: 'expand',
   pagePerSection: true,
   sortProps: props => props,
+  moduleAliases: {
+    'react-big-sur': path.resolve(__dirname, 'src'),
+    'media': path.resolve(__dirname, 'src', 'media'),
+  },
   styles: {
     StyleGuide: {
       '@global .row': {

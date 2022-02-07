@@ -1,17 +1,25 @@
 @import "../../style";
 
 .tooltip{
+
   display: flex;
   justify-content: center;
   align-items: center;
 
   .tooltip-text {
-    padding: $space6 $space3 $space6 $space3;
+    height: $height6;
+    padding: 0 $space2 0 $space2;
     box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     overflow: visible;
     text-align: center;
     white-space: nowrap;
+    font-size: $font4;
+    font-weight: $fontWeight5;
 
     border-radius: $radius2;
     background-color: $grey2;

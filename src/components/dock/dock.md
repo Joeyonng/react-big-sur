@@ -1,9 +1,6 @@
 ```jsx
 import {useState} from "react";
-import Dock from "./Dock";
-import DockContainer from "./DockContainer";
-import DockItem from "./DockItem";
-import Button from "../buttons/Button";
+import {Dock, DockContainer, DockItem, Button} from "react-big-sur"
 
 import calculator from "../../media/icons/app-calculator.png";
 import calendar from "../../media/icons/app-calendar.png";
@@ -17,8 +14,10 @@ import news from "../../media/icons/app-news.png";
 import settings from "../../media/icons/app-settings.png";
 import safari from "../../media/icons/app-safari.png";
 import store from "../../media/icons/app-store.png";
+import geiselBottom from "../../media/images/Geisel-pencil-bottom.png";
 
 const allApps = [
+  {name: 'Geisel', icon: geiselBottom,},
   {name: 'Calculator', icon: calculator,},
   {name: 'Calendar', icon: calendar,},
   {name: 'Facetime', icon: facetime,},
@@ -33,6 +32,7 @@ const allApps = [
   {name: 'App Store', icon: store,},
 ]
 const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
+// const [choices, setChoices] = useState([0]);
 
 <div 
   className="canvas background"
@@ -52,7 +52,7 @@ const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
   <Dock
     tileSize={64}
     largeSize={128}
-    orientation="top"
+    position="bottom"
     debug={false}
   >
     {choices.map((choice, index) =>
@@ -60,35 +60,21 @@ const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
         key={allApps[choice].name}
         id={allApps[choice].name}
         name={allApps[choice].name}
+        running={allApps[choice].name === 'Calculator'}
         onClick={() => {
           let newChoices = [...choices];
-          newChoices.splice(index, 0, Math.max(...choices) + 1);
-          // newChoices.splice(index, 1);
+          // newChoices.splice(index, 0, Math.max(...choices) + 1);
+          newChoices.splice(index, 1);
           setChoices(newChoices);
         }}
-      >
-        <img src={allApps[choice].icon}/>
-      </DockItem>
-    )}
-  </Dock>
-  
-  <Dock
-    tileSize={64}
-    largeSize={128}
-    orientation="bottom"
-    debug={false}
-  >
-    {choices.map((choice, index) =>
-      <DockItem
-        key={allApps[choice].name}
-        id={allApps[choice].name}
-        name={allApps[choice].name}
-        running={true}
-        onClick={() => {
-          let newChoices = [...choices];
-          newChoices.splice(index, 0, Math.max(...choices) + 1);
-          // newChoices.splice(index, 1);
-          setChoices(newChoices);
+        animation={{
+          open: false,
+          minimize: {
+            startX: 100,
+            startY: 100,
+            startW: 500,
+            startH: 100,
+          }
         }}
       >
         <img src={allApps[choice].icon}/>

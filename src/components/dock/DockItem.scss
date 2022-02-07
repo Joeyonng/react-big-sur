@@ -1,21 +1,20 @@
 @import "../../style";
 
 .dock-item-container {
-  position: relative;
+  //position: relative;
+  box-sizing: border-box;
 
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 
+  overflow: visible;
+
   .dock-item-tooltip {
-    position: absolute;
-    top: -$height3;
+    margin: 0 0 $space3 0;
   }
 
   .dock-item {
-    //padding: $space3;
-    //margin: $space7;
     box-sizing: border-box;
 
     display: flex;
@@ -23,7 +22,7 @@
     align-items: center;
 
     .dock-item-icon {
-      height: 100%;
+      //height: 100%;
 
       &:active {
         filter: $filterDarken;
