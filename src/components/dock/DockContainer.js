@@ -1,109 +1,140 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useSpring, useTransition, to, animated} from "react-spring";
+import {create, all} from 'mathjs'
+
+import {DockItem, DockDivider} from "../../index";
 
 import * as style from "../../style";
 import "./DockContainer.scss"
+import {usePrevious} from "react-use";
+import isEqual from "react-fast-compare";
+
+const math = create(all, {
+  matrix: 'Array',
+});
+
 
 function DockContainer(props) {
   const {classNames, styles, children, ...curProps} = props;
   const {center, baseSize, largeSize, spreading, horizontal, magnifyDirection, debug, ...rootProps} = curProps;
-  const baseSizeMargin = baseSize + baseSize / 16;
-  const largeSizeMargin = largeSize + largeSize / 16;
 
-  // Helper functions
-  const getMagnifier = (cursor) => {
-    const magnifier = cursor ? cursor - (center - getDockWidth(null) / 2) : null;
-    return magnifier < 0 || magnifier >= getDockWidth(null) ? null : magnifier;
+  const getPercents = (cursorRel, scales) => {
+    const distances = math.abs(math.subtract(scales, cursorRel));
+    const percents = math.subtract(1, math.divide(distances, baseSizeMargin * spreading));
+    const percentsClip = percents.map(x => x < 0 ? 0 : x);
+
+    return percentsClip;
   }
 
-  const sumDockItemSizes = (itemWidths = []) => {
-    return itemWidths.reduce((sum, itemWidth) => sum + itemWidth, 0);
+  const getDockItemWidths = (cursorRel) => {
+    if (cursorRel === null) return itemSizes;
+
+    const magPercents = math.multiply(getPercents(cursorRel, scales.current), magnifier);
+    const itemPercents = ranges.current.map((range, index) =>
+      index !== 0 ? magPercents.slice(ranges.current[index - 1], range) : magPercents.slice(0, range));
+    const itemWidths = math.add(math.apply(itemPercents, 1, math.sum), itemSizes);
+
+    return itemWidths
   }
 
-  const getDockItemSize = (magnifier, index) => {
-    if (magnifier === null) return baseSizeMargin;
-
-    const itemCenter = getDockWidth(null, index) + baseSizeMargin / 2;
-    const distance = Math.abs(magnifier - itemCenter);
-    const distancePercent = Math.max(1 - (distance / (baseSizeMargin * spreading)), 0);
-    return baseSizeMargin + (largeSizeMargin - baseSizeMargin) * distancePercent;
+  const getDockWidth = (cursorRel=null) => {
+    return math.sum(getDockItemWidths(cursorRel));
   }
 
-  const getDockWidth = (magnifier, until=React.Children.count(children)) => {
-    const dockItemSizes = React.Children.map(children, (item, index) => index < until ? getDockItemSize(magnifier, index) : 0);
-    return sumDockItemSizes(dockItemSizes);
-  }
+  const getDockOffset = (cursorRel, left) => {
+    if (scales === null) return 0;
 
-  const getDockOffset = (magnifier, left) => {
-    const nonMagnifiedDockWidth = getDockWidth(null);
+    const nonMagnifiedDockWidth = getDockWidth();
     const endMagnifiedDockWidth = getDockWidth(0);
     const maxOffset = endMagnifiedDockWidth - nonMagnifiedDockWidth;
-    if (magnifier === null) return maxOffset;
+    if (cursorRel === null) return maxOffset;
 
     const maxMagnifiedDockWidth = nonMagnifiedDockWidth + maxOffset * 2;
     const midMagnifiedDockWidth = getDockWidth(nonMagnifiedDockWidth / 2);
-    const dockOffset = Math.abs(maxMagnifiedDockWidth - getDockWidth(magnifier));
-    if (midMagnifiedDockWidth >= maxMagnifiedDockWidth) {
-      const passMiddle = magnifier >= nonMagnifiedDockWidth / 2;
-      return (left && !passMiddle) || (!left && passMiddle) ? dockOffset : 0;
-    }
+    const curDockOffset = math.abs(maxMagnifiedDockWidth - getDockWidth(cursorRel));
+    const midDockOffset = math.abs(maxMagnifiedDockWidth - midMagnifiedDockWidth);
 
-    const rightOffset = magnifier / nonMagnifiedDockWidth * dockOffset;
-    // console.log("[getDockOffset]",
-    //   "maxOffset", maxOffset,
-    //   "nonMag", nonMagnifiedDockWidth,
-    //   "endMag", endMagnifiedDockWidth,
-    //   "midMag", midMagnifiedDockWidth,
-    //   "maxMag", maxMagnifiedDockWidth,
-    //   "rightOffset", rightOffset,
-    // )
-    return left ? dockOffset - rightOffset : rightOffset;
+    const cursorMid = cursorRel / nonMagnifiedDockWidth - 0.5;
+    const offset1 = (1 - math.abs(cursorMid) * 2) * midDockOffset / 2;
+    const offset2 = curDockOffset - offset1;
+    const dockOffset = (left && cursorMid < 0) || (!left && cursorMid >= 0) ? offset2 : offset1;
+
+    return dockOffset
   }
 
-  // React states and Spring states
+  const getCursorRel = (cursor) => {
+    const cursorRel = cursor ? cursor - (center - getDockWidth(null) / 2) : null;
+    return cursorRel < 0 || cursorRel > getDockWidth(null) ? null : cursorRel;
+  }
+
+  const baseSizeMargin = baseSize + baseSize / 16;
+  const itemSizes = React.Children.map(children, item => item.type === DockItem ? baseSizeMargin : baseSize * 0.5625);
+  const prevItemSizes = usePrevious(itemSizes);
+
+  const scales = useRef(null);
+  const ranges = useRef(null);
+  if (!isEqual(prevItemSizes, itemSizes)) {
+    const cumItems = [];
+    itemSizes.reduce((value, prevValue, index) => cumItems[index] = value + prevValue, 0);
+
+    scales.current = math.range(0, getDockWidth(), 1);
+    ranges.current = cumItems.map((x) => {
+      const larger = math.compare(x, scales.current);
+      return larger.includes(-1) ? larger.indexOf(-1) : scales.current.length;
+    })
+  }
+
+  const largeSizeMargin = largeSize + largeSize / 16;
+  const percents = getPercents(baseSizeMargin / 2, math.range(0, baseSizeMargin, 1));
+  const magnifier = (largeSizeMargin - baseSizeMargin) / math.sum(percents);
+
   const [state, setState] = useState({
     cursor: null,
-    hidden: Object.fromEntries(props.children.map(item => ([item.props.id, false])))
   });
+
+  const dockRef = useRef();
+  const dockCenterRef = useRef();
 
   // useSpring for magnifying animation
-  const spring = useSpring({
-    ...Object.fromEntries(children.map((item, index) => [item.props.id, getDockItemSize(getMagnifier(state.cursor), index)])),
-    offsetLeft: getDockOffset(getMagnifier(state.cursor), true),
-    offsetRight: getDockOffset(getMagnifier(state.cursor), false),
-    config: {tension: 500, clamp: true},
-    // config: {duration: 1},
-  });
+  const getSpringObject = (cursor, config) => {
+    const cursorRel = getCursorRel(cursor);
+    const dockItemSizes = getDockItemWidths(cursorRel);
+
+    if (debug && dockRef.current && dockCenterRef.current) {
+      console.log('[DockContainer DEBUG]',
+        'total width', dockRef.current.offsetWidth,
+        'center width', dockCenterRef.current.offsetWidth,
+        'cursorRel', cursorRel,
+        'left offset', getDockOffset(cursorRel, true),
+        'right offset', getDockOffset(cursorRel, false),
+        'dock width', getDockWidth(cursorRel),
+      );
+    }
+
+    if (dockCenterRef.current) {
+      let duration = math.abs(getDockWidth(cursorRel) - dockCenterRef.current.offsetWidth) / 3;
+      config = {duration};
+    }
+
+    return {
+      ...Object.assign(...React.Children.map(children, (item, index) => ({[item.props.id]: dockItemSizes[index]}))),
+      offsetLeft: getDockOffset(cursorRel, true),
+      offsetRight: getDockOffset(cursorRel, false),
+      config: config,
+    };
+  }
+  const config = {tension: 500, clamp: true};
+  const spring = useSpring(getSpringObject(state.cursor, config));
 
   // useTransition for entering/leaving animation
-  const springTransitions = useTransition(React.Children.map(children, child => child), {
+  const springTransitions = useTransition(React.Children.map(children, item => item), {
     keys: item => item.props.id,
     from: () => ({scale: 0}),
     enter: () => ({scale: 1}),
     leave: () => ({scale: 0}),
-    onRest: (results, control, item) => {
-      setState(state => {
-        let newHidden = {...state.hidden};
-        newHidden[item.props.id] = true;
-        return {...state, hidden: newHidden};
-      })
-    },
-    config: {
-      duration: 200,
-    }
+    config,
   });
 
-  const dockRef = useRef();
-  // if (dockRef.current) {
-  //   const magnifier = getMagnifier(state.cursor);
-  //   console.log(
-  //     'total width', dockRef.current.offsetWidth,
-  //     'magnifier', magnifier,
-  //     'left offset', getDockOffset(magnifier, true),
-  //     'right offset', getDockOffset(magnifier, false),
-  //     'dock width', getDockWidth(magnifier)
-  //   );
-  // }
   return(
     <div
       ref={dockRef}
@@ -123,6 +154,7 @@ function DockContainer(props) {
         }}
       />
       <div
+        ref={dockCenterRef}
         className="dock-center"
         style={{
           borderRadius: baseSize / 3,
@@ -140,7 +172,8 @@ function DockContainer(props) {
           }[magnifyDirection],
         }}
         onMouseMove={(event) => {
-          setState({...state, cursor: horizontal ? event.pageX : event.pageY})
+          const cursor = horizontal ? event.pageX : event.pageY;
+          setState({...state, cursor: cursor})
         }}
         onMouseLeave={(event) => {
           setState({...state, cursor: null});
@@ -152,7 +185,6 @@ function DockContainer(props) {
           horizontal,
           magnifyDirection,
           debug,
-          hidden: state.hidden[item.props.id],
           scale: springTransition.scale,
         }))}
       </div>
@@ -170,63 +202,22 @@ function DockContainer(props) {
 export default DockContainer;
 
 /*
-const getDockItemSize = (index, cursor) => {
-  const sumDockItemSizes = (itemWidths = []) => {
-    return itemWidths.reduce((sum, itemWidth) => sum + itemWidth, 0);
-  }
+const getMagnifier = () => {
+  const percents = getPercents(baseSizeMargin / 2, baseSizeMargin);
+  const magnifier = (largeSizeMargin - baseSizeMargin) / math.sum(percents);
 
-  if (cursor === null) return baseSize;
-  let defaultDockItemSizes = Array(React.Children.count(children)).fill(baseSize);
-  let magnifier = state.cursor - (center - sumDockItemSizes(defaultDockItemSizes) / 2);
-
-  let itemCenter = sumDockItemSizes(defaultDockItemSizes.slice(0, index)) + (baseSize / 2);
-  let distance = Math.abs(itemCenter - magnifier);
-  let distancePercent = Math.max(1 - (distance / (baseSize * spreading)), 0);
-  return baseSize + (largeSize - baseSize) * distancePercent;
+  return magnifier
 }
 
-const getDockOffset = (left, cusor) => {
-  const maxMagnifiedDockWidth = getDockWidth(getDockWidth(null) / 2)
-  const dockOffset = Math.abs(maxMagnifiedDockWidth - getDockWidth(magnifier));
-  if (magnifier === null) return dockOffset / 2;
+const numItems = React.Children.count(children);
+const getDockItemWidths = (cursorRel) => {
+  if (cursorRel === null) return math.multiply(baseSizeMargin, math.ones(numItems));
 
-  const passMiddle = magnifier >= getDockWidth(null) / 2;
-  return (left && !passMiddle) || (!left && passMiddle) ? dockOffset : 0;
+  const percents = getPercents(cursorRel, getDockWidth());
+  const itemPercents = math.reshape(math.multiply(percents, getMagnifier()), [numItems, -1]);
+  const itemWidths = math.add(math.apply(itemPercents, 1, math.sum), baseSizeMargin);
+
+  return itemWidths
 }
- */
-
-/*
-  const offsetRef = useRef(null);
-  const numChildren = React.Children.count(children);
-  const prevNumChildren = usePrevious(numChildren);
-  useEffect(() => {
-    if (dockRef.current) {
-      const difference = baseSize * (numChildren - (prevNumChildren ? prevNumChildren : 0)) * 0.5;
-      if (!offsetRef.current) {
-        const rect = dockRef.current.getBoundingClientRect();
-        offsetRef.current = (horizontal ? rect.x : rect.y) + getDockOffset(null, true) - difference;
-      }
-      offsetRef.current -= difference
-      console.log('current', offsetRef.current, difference)
-    }
-  }, [numChildren])
- */
-
-/*
-          const rect = dockRef.current.getBoundingClientRect();
-          const magnifier = (horizontal ? event.pageX - rect.x : event.pageY - rect.y) - getDockOffset(null, true);
-          setState({...state, magnifier});
- */
-
-/*
-  const getDockOffset = (magnifier, left) => {
-    const maxMagnifiedDockWidth = getDockWidth(getDockWidth(null) / 2);
-    const dockOffset = Math.abs(maxMagnifiedDockWidth - getDockWidth(magnifier));
-    if (magnifier === null) return dockOffset / 2;
-
-    const passMiddle = magnifier >= getDockWidth(null) / 2;
-    return (left && !passMiddle) || (!left && passMiddle) ? dockOffset : 0;
-  }
-
  */
 

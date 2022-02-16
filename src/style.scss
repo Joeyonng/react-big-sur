@@ -80,7 +80,8 @@ $maxAppZIndex: 99999;
 
 $unitPx: 1px;
 $border: $unitPx solid $grey2;
-$divider: $unitPx solid $grey1;
+$divider1: $unitPx solid $black;
+$divider2: $unitPx solid $grey2;
 $filterBlur: blur(10px);
 $filterDarken: brightness(0.8);
 $filterUnFocus: contrast(0.9);

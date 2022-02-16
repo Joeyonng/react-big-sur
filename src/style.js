@@ -99,7 +99,8 @@ export const maxAppZIndex = "99999";
 
 export const unitPx = "1px";
 export const border = `${unitPx} solid ${grey2}`;
-export const divider = `${unitPx} solid ${grey1}`;
+export const divider1 = `${unitPx} solid ${black}`;
+export const divider2 = `${unitPx} solid ${grey2}`;
 export const filterBlur = "blur(10px)";
 export const filterDarken = "brightness(0.9)";
 export const filterUnFocus = "contrast(0.9)";

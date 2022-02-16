@@ -1,6 +1,6 @@
 ```jsx
 import {useState} from "react";
-import {Dock, DockContainer, DockItem, Button} from "react-big-sur"
+import {Dock, DockContainer, DockItem, DockDivider, Button} from "react-big-sur"
 
 import calculator from "../../media/icons/app-calculator.png";
 import calendar from "../../media/icons/app-calendar.png";
@@ -31,7 +31,7 @@ const allApps = [
   {name: 'Safari', icon: safari,},
   {name: 'App Store', icon: store,},
 ]
-const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
+const [choices, setChoices] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
 // const [choices, setChoices] = useState([0]);
 
 <div 
@@ -60,7 +60,6 @@ const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
         key={allApps[choice].name}
         id={allApps[choice].name}
         name={allApps[choice].name}
-        running={allApps[choice].name === 'Calculator'}
         onClick={() => {
           let newChoices = [...choices];
           // newChoices.splice(index, 0, Math.max(...choices) + 1);
@@ -80,6 +79,29 @@ const [choices, setChoices] = useState([0, 1, 2, 3, 4]);
         <img src={allApps[choice].icon}/>
       </DockItem>
     )}
+    
+    <DockDivider
+      id="divider"
+    />
+    
+    <DockDivider
+      id="divider2"
+    />
+    
+    <DockItem
+      key={allApps[0].name}
+      id={allApps[0].name}
+      name={allApps[0].name}
+      animation={{
+        open: false,
+      }}
+    >
+      <img src={allApps[0].icon}/>
+    </DockItem>
+    
+    <DockDivider
+      id="divider3"
+    />
   </Dock>
 </div>
 ```

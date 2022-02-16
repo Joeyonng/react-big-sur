@@ -5,6 +5,7 @@ export {default as ToolbarItem} from './components/buttons/ToolbarItem';
 export {default as Dock} from './components/dock/Dock';
 export {default as DockContainer} from './components/dock/DockContainer';
 export {default as DockItem} from './components/dock/DockItem';
+export {default as DockDivider} from './components/dock/DockDivider';
 export {default as Spinner} from './components/indicators/Spinner';
 export {default as DropdownList} from './components/lists/DropdownList';
 export {default as List} from './components/lists/List';
