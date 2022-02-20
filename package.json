@@ -38,13 +38,16 @@
   "dependencies": {
     "clsx": "^1.1.1",
     "framer-motion": "^6.2.4",
+    "html-to-image": "^1.9.0",
+    "html2canvas": "^1.4.1",
     "mathjs": "^10.1.1",
     "prop-types": "^15.8.1",
     "react-fast-compare": "^3.2.0",
     "react-feather": "^2.0.9",
     "react-rnd": "^10.3.5",
     "react-spring": "^9.4.2",
-    "react-use": "^17.3.2"
+    "react-use": "^17.3.2",
+    "use-react-screenshot": "^3.0.0"
   },
   "files": [
     "dist"

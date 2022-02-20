@@ -78,7 +78,7 @@ const AnimatedWindow = forwardRef((props, ref) => {
       ref={rndRef}
       className="animated-window"
       style={{
-        display: hidden ? "none" : "inline-block",
+        visibility: hidden ? "hidden" : "visible",
         zIndex: zIndex,
       }}
       x={spring.x}

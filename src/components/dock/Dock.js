@@ -4,10 +4,11 @@ import DockContainer from "./DockContainer";
 
 import * as style from "../../style";
 import "./Dock.scss"
+import PropTypes from "prop-types";
 
 function Dock(props) {
   const {classNames, styles, children, ...curProps} = props;
-  const {tileSize, largeSize, position, debug, ...rootProps} = curProps;
+  const {baseSize, largeSize, position, debug, ...rootProps} = curProps;
   const horizontal = ['top', 'bottom'].includes(position);
 
   const [state, setState] = useState({
@@ -42,7 +43,7 @@ function Dock(props) {
     >
       <DockContainer
         center={state.center}
-        baseSize={tileSize}
+        baseSize={baseSize}
         largeSize={largeSize}
         spreading={3}
         horizontal={horizontal}
@@ -53,6 +54,24 @@ function Dock(props) {
       </DockContainer>
     </div>
   );
+}
+
+DockContainer.propTypes = {
+  /** The unmagnified size of the item. Suggested ranges: [16, 128]. */
+  baseSize: PropTypes.number,
+  /** The magnified size of the item. Suggested ranges: [16, 128]. */
+  largeSize: PropTypes.number,
+  /** The position of the dock. */
+  position: PropTypes.oneOf(['bottom', 'top', 'left', 'right']),
+  /** Debug mode. */
+  debug: PropTypes.bool,
+}
+
+DockContainer.defaultProps = {
+  baseSize: 64,
+  largeSize: 128,
+  position: 'bottom',
+  debug: false,
 }
 
 export default Dock;

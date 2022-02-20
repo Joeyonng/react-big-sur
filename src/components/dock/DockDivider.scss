@@ -2,6 +2,7 @@
 
 .dock-divider-container {
   box-sizing: border-box;
+  position: relative; // Needed to be positioned so that stacking can be respected.
 
   display: flex;
   flex-direction: row;

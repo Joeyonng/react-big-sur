@@ -1,8 +1,8 @@
 @import "../../style";
 
 .dock-item-container {
-  //position: relative;
   box-sizing: border-box;
+  position: relative; // Needed to be positioned so that stacking can be respected.
 
   display: flex;
   justify-content: center;
@@ -21,11 +21,27 @@
     flex-direction: column;
     align-items: center;
 
-    .dock-item-icon {
-      //height: 100%;
+    &:active {
+      filter: $filterDarken;
+    }
 
-      &:active {
-        filter: $filterDarken;
+    .dock-item-anchor {
+      box-sizing: border-box;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .dock-item-icon {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+
+        transform-origin: top left;
+
+        pointer-events: none;
+        object-fit: contain;
       }
     }
   }

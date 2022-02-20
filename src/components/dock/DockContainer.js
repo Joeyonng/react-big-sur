@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useMemo, useRef, useState} from "react";
 import {useSpring, useTransition, to, animated} from "react-spring";
 import {create, all} from 'mathjs'
 
@@ -6,13 +6,9 @@ import {DockItem, DockDivider} from "../../index";
 
 import * as style from "../../style";
 import "./DockContainer.scss"
-import {usePrevious} from "react-use";
-import isEqual from "react-fast-compare";
+import PropTypes from "prop-types";
 
-const math = create(all, {
-  matrix: 'Array',
-});
-
+const math = create(all, {matrix: 'Array'});
 
 function DockContainer(props) {
   const {classNames, styles, children, ...curProps} = props;
@@ -29,9 +25,9 @@ function DockContainer(props) {
   const getDockItemWidths = (cursorRel) => {
     if (cursorRel === null) return itemSizes;
 
-    const magPercents = math.multiply(getPercents(cursorRel, scales.current), magnifier);
-    const itemPercents = ranges.current.map((range, index) =>
-      index !== 0 ? magPercents.slice(ranges.current[index - 1], range) : magPercents.slice(0, range));
+    const magPercents = math.multiply(getPercents(cursorRel, scales), magnifier);
+    const itemPercents = ranges.map((range, index) =>
+      index !== 0 ? magPercents.slice(ranges[index - 1], range) : magPercents.slice(0, range));
     const itemWidths = math.add(math.apply(itemPercents, 1, math.sum), itemSizes);
 
     return itemWidths
@@ -42,8 +38,6 @@ function DockContainer(props) {
   }
 
   const getDockOffset = (cursorRel, left) => {
-    if (scales === null) return 0;
-
     const nonMagnifiedDockWidth = getDockWidth();
     const endMagnifiedDockWidth = getDockWidth(0);
     const maxOffset = endMagnifiedDockWidth - nonMagnifiedDockWidth;
@@ -68,21 +62,22 @@ function DockContainer(props) {
   }
 
   const baseSizeMargin = baseSize + baseSize / 16;
-  const itemSizes = React.Children.map(children, item => item.type === DockItem ? baseSizeMargin : baseSize * 0.5625);
-  const prevItemSizes = usePrevious(itemSizes);
+  const dockItems = React.Children.toArray(children).filter(item => item && (item.type === DockItem || item.type === DockDivider))
+  const itemSizes = dockItems.map(item => item.type === DockItem ? baseSizeMargin : baseSize * 0.5625);
 
-  const scales = useRef(null);
-  const ranges = useRef(null);
-  if (!isEqual(prevItemSizes, itemSizes)) {
+  // Only update when itemSizes changed to increase performance
+  const [scales, ranges] = useMemo(() => {
     const cumItems = [];
     itemSizes.reduce((value, prevValue, index) => cumItems[index] = value + prevValue, 0);
 
-    scales.current = math.range(0, getDockWidth(), 1);
-    ranges.current = cumItems.map((x) => {
-      const larger = math.compare(x, scales.current);
-      return larger.includes(-1) ? larger.indexOf(-1) : scales.current.length;
+    const scales = math.range(0, getDockWidth(), 1);
+    const ranges = cumItems.map((x) => {
+      const larger = math.compare(x, scales);
+      return larger.includes(-1) ? larger.indexOf(-1) : scales.length;
     })
-  }
+
+    return [scales, ranges]
+  }, [JSON.stringify(itemSizes)])
 
   const largeSizeMargin = largeSize + largeSize / 16;
   const percents = getPercents(baseSizeMargin / 2, math.range(0, baseSizeMargin, 1));
@@ -96,43 +91,39 @@ function DockContainer(props) {
   const dockCenterRef = useRef();
 
   // useSpring for magnifying animation
-  const getSpringObject = (cursor, config) => {
+  const getSpringObject = (cursor) => {
     const cursorRel = getCursorRel(cursor);
     const dockItemSizes = getDockItemWidths(cursorRel);
 
-    if (debug && dockRef.current && dockCenterRef.current) {
-      console.log('[DockContainer DEBUG]',
-        'total width', dockRef.current.offsetWidth,
-        'center width', dockCenterRef.current.offsetWidth,
-        'cursorRel', cursorRel,
-        'left offset', getDockOffset(cursorRel, true),
-        'right offset', getDockOffset(cursorRel, false),
-        'dock width', getDockWidth(cursorRel),
-      );
-    }
-
+    let config;
     if (dockCenterRef.current) {
-      let duration = math.abs(getDockWidth(cursorRel) - dockCenterRef.current.offsetWidth) / 3;
+      const curWidth = horizontal ? dockCenterRef.current.offsetWidth : dockCenterRef.current.offsetHeight;
+      const duration = math.abs(getDockWidth(cursorRel) - curWidth) / 3;
       config = {duration};
     }
 
     return {
-      ...Object.assign(...React.Children.map(children, (item, index) => ({[item.props.id]: dockItemSizes[index]}))),
+      ...Object.assign(...dockItems.map((item, index) => ({[item.props.id]: dockItemSizes[index]}))),
       offsetLeft: getDockOffset(cursorRel, true),
       offsetRight: getDockOffset(cursorRel, false),
       config: config,
     };
   }
-  const config = {tension: 500, clamp: true};
-  const spring = useSpring(getSpringObject(state.cursor, config));
+  const spring = useSpring(getSpringObject(state.cursor));
 
   // useTransition for entering/leaving animation
-  const springTransitions = useTransition(React.Children.map(children, item => item), {
+  const springTransitions = useTransition(dockItems.map(item => item), {
     keys: item => item.props.id,
     from: () => ({scale: 0}),
     enter: () => ({scale: 1}),
     leave: () => ({scale: 0}),
-    config,
+    onStart: (result, spring, item) => {
+      if (item.props.onAnimateStart) item.props.onAnimateStart('inOut', result.value.scale);
+    },
+    onRest: (result, spring, item) => {
+      if (item.props.onAnimateStop) item.props.onAnimateStop('inOut', result.value.scale);
+    },
+    config: {duration: 200},
   });
 
   return(
@@ -140,19 +131,17 @@ function DockContainer(props) {
       ref={dockRef}
       className="dock-container"
       style={{
-        ...[{
-          flexDirection: "column",
-        }, {
-          flexDirection: "row",
-        }][Number(horizontal)],
+        flexDirection: horizontal ? "row" : "column",
       }}
     >
       <animated.div
         style={{
-          width: spring.offsetLeft,
+          width: horizontal ? spring.offsetLeft : "auto",
+          height: !horizontal ? spring.offsetLeft : "auto",
           backgroundColor: style.rgba(style.red, debug ? 0.5 : 0),
         }}
       />
+
       <div
         ref={dockCenterRef}
         className="dock-center"
@@ -179,45 +168,58 @@ function DockContainer(props) {
           setState({...state, cursor: null});
         }}
       >
+        <div
+          className="dock-center-background"
+          style={{
+            borderRadius: baseSize / 3,
+          }}
+        />
+
         {springTransitions((springTransition, item) => React.cloneElement(item, {
-          size: to([spring[item.props.id], springTransition.scale], (size, scale) => size),
+          size: spring[item.props.id].to(size => size),
+          scale: springTransition.scale,
           baseSize,
           horizontal,
           magnifyDirection,
           debug,
-          scale: springTransition.scale,
         }))}
       </div>
+
       <animated.div
         style={{
-          width: spring.offsetRight,
+          width: horizontal ? spring.offsetRight : "auto",
+          height: !horizontal ? spring.offsetRight : "auto",
           backgroundColor: style.rgba(style.red, debug ? 0.5 : 0),
         }}
       />
     </div>
-
   );
 }
 
+DockContainer.propTypes = {
+  /** The center coordinate of DockContainer. If horizontal=True, use X coordinate. Otherwise, ues Y coordinate. */
+  center: PropTypes.number.isRequired,
+  /** The unmagnified size of the item. Suggested ranges: [16, 128]. */
+  baseSize: PropTypes.number,
+  /** The magnified size of the item. Suggested ranges: [16, 128]. */
+  largeSize: PropTypes.number,
+  /** The magnified radius. The nearest `spreading * baseSize` number of pixels will be magnified. */
+  spreading: PropTypes.number,
+  /** Whether DockContainer will be horizontal or vertical. */
+  horizontal: PropTypes.bool,
+  /** The direction of the magnification. */
+  magnifyDirection: PropTypes.oneOf(['primary', 'secondary', 'center']),
+  /** Debug mode. */
+  debug: PropTypes.bool,
+}
+
+DockContainer.defaultProps = {
+  baseSize: 64,
+  largeSize: 128,
+  spreading: 3,
+  horizontal: true,
+  magnifyDirection: 'primary',
+  debug: false,
+}
+
 export default DockContainer;
-
-/*
-const getMagnifier = () => {
-  const percents = getPercents(baseSizeMargin / 2, baseSizeMargin);
-  const magnifier = (largeSizeMargin - baseSizeMargin) / math.sum(percents);
-
-  return magnifier
-}
-
-const numItems = React.Children.count(children);
-const getDockItemWidths = (cursorRel) => {
-  if (cursorRel === null) return math.multiply(baseSizeMargin, math.ones(numItems));
-
-  const percents = getPercents(cursorRel, getDockWidth());
-  const itemPercents = math.reshape(math.multiply(percents, getMagnifier()), [numItems, -1]);
-  const itemWidths = math.add(math.apply(itemPercents, 1, math.sum), baseSizeMargin);
-
-  return itemWidths
-}
- */
-

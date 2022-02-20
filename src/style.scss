@@ -92,5 +92,5 @@ $shadow3: 0px 2px 10px rgba($black, 0.1);
 
 @mixin glassBackground() {
   background: rgba($grey3, 0.5);
-  backdrop-filter: blur(80px);
+  backdrop-filter: blur(10px);
 }

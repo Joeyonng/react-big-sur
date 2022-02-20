@@ -57,14 +57,19 @@ const Button = forwardRef((props, ref) => {
         boxShadow: VARIANTS[variant].boxShadow,
         color: state.active && variant === 'secondary' ? style.white : VARIANTS[variant].color,
         filter: state.active && variant !== 'secondary' ? style.filterDarken : undefined,
+        pointerEvents: disabled ? "none" : "auto",
       }}
-      onMouseUp={(e) => {
+      onMouseUp={(event) => {
         if (!disabled) setState({...state, active: false})
-        if (rootProps.onMouseUp) rootProps.onMouseUp(e);
+        if (rootProps.onMouseUp) rootProps.onMouseUp(event);
       }}
-      onMouseDown={(e) => {
+      onMouseDown={(event) => {
         if (!disabled) setState({...state, active: true})
-        if (rootProps.onMouseDown) rootProps.onMouseDown(e);
+        if (rootProps.onMouseDown) rootProps.onMouseDown(event);
+      }}
+      onMouseOut={(event) => {
+        if (!disabled) setState({...state, active: false})
+        if (rootProps.onMouseOut) rootProps.onMouseOut(event);
       }}
       {...rootProps}
     >

@@ -2,52 +2,114 @@
 import {useState} from "react";
 import {Dock, DockContainer, DockItem, DockDivider, Button} from "react-big-sur"
 
-import calculator from "../../media/icons/app-calculator.png";
-import calendar from "../../media/icons/app-calendar.png";
-import facetime from "../../media/icons/app-facetime.png";
-import finder from "../../media/icons/app-finder.png";
-import home from "../../media/icons/app-home.png";
-import mail from "../../media/icons/app-mail.png";
-import maps from "../../media/icons/app-maps.png";
-import messages from "../../media/icons/app-messages.png";
-import news from "../../media/icons/app-news.png";
-import settings from "../../media/icons/app-settings.png";
-import safari from "../../media/icons/app-safari.png";
-import store from "../../media/icons/app-store.png";
-import geiselBottom from "../../media/images/Geisel-pencil-bottom.png";
+import {bigSurIcons} from "../../media/icons/index";
 
-const allApps = [
-  {name: 'Geisel', icon: geiselBottom,},
-  {name: 'Calculator', icon: calculator,},
-  {name: 'Calendar', icon: calendar,},
-  {name: 'Facetime', icon: facetime,},
-  {name: 'Finder', icon: finder,},
-  {name: 'Home', icon: home,},
-  {name: 'Mail', icon: mail,},
-  {name: 'maps', icon: maps,},
-  {name: 'messages', icon: messages,},
-  {name: 'news', icon: news,},
-  {name: 'System Preferences', icon: settings,},
-  {name: 'Safari', icon: safari,},
-  {name: 'App Store', icon: store,},
-]
-const [choices, setChoices] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
-// const [choices, setChoices] = useState([0]);
+const allApps = Object.entries(bigSurIcons);
+const [choices, setChoices] = useState([0, 1, 2]);
 
-<div 
+<div className="canvas background">
+  {['top', 'bottom', 'left', 'right'].map(position =>
+    <Dock
+      key={position}
+      baseSize={64}
+      largeSize={128}
+      position={position}
+    >
+      {choices.map((choice, index) =>
+        <DockItem
+          key={allApps[choice][0]}
+          id={allApps[choice][0]}
+          src={allApps[choice][1]}
+          name={allApps[choice][0]}
+        >
+          <img src={allApps[choice][1]}/>
+        </DockItem>
+      )}
+
+      <DockDivider
+        id="divider"
+      />
+
+      <DockItem
+        key={allApps[10][0]}
+        id={allApps[10][0]}
+        src={allApps[10][1]}
+        name={allApps[10][0]}
+      >
+        <img src={allApps[10][1]}/>
+      </DockItem>
+    </Dock>
+  )}
+</div>
+```
+
+```jsx
+import {useRef, useState} from "react";
+import {Dock, DockContainer, DockItem, DockDivider, Button, AnimatedWindow, TitleBarWindow} from "react-big-sur"
+import {toPng} from "html-to-image";
+
+import {bigSurIcons} from "../../media/icons/index";
+
+const allApps = Object.entries(bigSurIcons);
+const [choices, setChoices] = useState([0, 1, 2, 3]);
+const [image, setImage] = useState(null);
+
+const windowRef = useRef(null);
+<div
   className="canvas background"
 >
-  <Button
-    onClick={() => {
-      let randomIndex = Math.floor(Math.random() * choices.length);
-      let newChoices = [...choices];
-      newChoices.splice(randomIndex, 0, Math.max(...choices) + 1);
-      // newChoices.splice(randomIndex, 1);
-      setChoices(newChoices);
-    }}
+  <AnimatedWindow
+    initial={{x: 100, y: 100, w: 360, h: 240}}
+    cancel=".content"
+    hidden={image !== null}
   >
-    Random
-  </Button>
+    <TitleBarWindow
+      ref={windowRef}
+      width="100%"
+      height="100%"
+      onMinimizeClick={() => {
+        toPng(windowRef.current).then(dataUrl => {
+          setImage(dataUrl)
+        }).catch(error => {
+          console.error('oops, something went wrong!', error);
+        });
+      }}
+    />
+  </AnimatedWindow>
+
+  <div
+    className="row"
+  >
+    <Button
+      onClick={() => {
+        const nonSelected = []
+        allApps.forEach((_, index) => {if (!choices.includes(index)) nonSelected.push(index)})
+        
+        const newIndex = Math.floor(Math.random() * nonSelected.length);
+        const oldIndex = Math.floor(Math.random() * choices.length);
+        let newChoices = [...choices];
+        newChoices.splice(oldIndex, 0, nonSelected[newIndex]);
+        setChoices(newChoices);
+      }}
+      disabled={choices.length === allApps.length}
+      variant={choices.length === allApps.length ? 'disabled' : 'primary'}
+    >
+      Add DockItem
+    </Button>
+    
+    <Button
+      onClick={() => {
+        let oldIndex = Math.floor(Math.random() * choices.length);
+        let newChoices = [...choices];
+        newChoices.splice(oldIndex, 1);
+        setChoices(newChoices);
+      }}
+      disabled={choices.length === 1}
+      variant={choices.length === 1 ? 'disabled' : 'secondary'}
+    >
+      Remove DockItem
+    </Button>
+  </div>
 
   <Dock
     tileSize={64}
@@ -57,51 +119,36 @@ const [choices, setChoices] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
   >
     {choices.map((choice, index) =>
       <DockItem
-        key={allApps[choice].name}
-        id={allApps[choice].name}
-        name={allApps[choice].name}
+        key={allApps[choice][0]}
+        id={allApps[choice][0]}
+        src={allApps[choice][1]}
+        name={allApps[choice][0]}
         onClick={() => {
           let newChoices = [...choices];
           // newChoices.splice(index, 0, Math.max(...choices) + 1);
           newChoices.splice(index, 1);
           setChoices(newChoices);
         }}
-        animation={{
-          open: false,
-          minimize: {
-            startX: 100,
-            startY: 100,
-            startW: 500,
-            startH: 100,
-          }
-        }}
       >
-        <img src={allApps[choice].icon}/>
+        <img src={allApps[choice][1]}/>
       </DockItem>
     )}
-    
-    <DockDivider
-      id="divider"
-    />
-    
-    <DockDivider
-      id="divider2"
-    />
-    
-    <DockItem
-      key={allApps[0].name}
-      id={allApps[0].name}
-      name={allApps[0].name}
-      animation={{
-        open: false,
-      }}
-    >
-      <img src={allApps[0].icon}/>
-    </DockItem>
-    
-    <DockDivider
-      id="divider3"
-    />
+
+    {!image ? undefined :
+      <DockItem
+        key={'image'}
+        id={'image'}
+        src={image}
+        name={'image'}
+        onClick={() => {setImage(undefined)}}
+        animateInOut={windowRef}
+        onAnimateStop={(type, value) =>{
+          if (type === 'inOut' && value === 0) setImage(null);
+        }}
+      >
+        <img src={image}/>
+      </DockItem>
+    }
   </Dock>
 </div>
 ```

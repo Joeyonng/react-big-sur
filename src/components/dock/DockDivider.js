@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import {animated, useSpring, to} from "react-spring";
 
-import Tooltip from "../tooltip/Tooltip";
-
 import * as style from "../../style";
 import "./DockDivider.scss"
 

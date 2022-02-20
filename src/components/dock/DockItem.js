@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from "prop-types";
 import {animated, useSpring, to} from "react-spring";
 
 import Tooltip from "../tooltip/Tooltip";
@@ -7,26 +8,43 @@ import * as style from "../../style";
 import "./DockItem.scss"
 
 function DockItem(props) {
-  const {classNames, styles, children, ...curProps} = props;
-  const {name, running, onClick, animation, size, baseSize, horizontal, magnifyDirection, debug, ...rootProps} = curProps;
+  const {size, scale, baseSize, horizontal, magnifyDirection, debug, ...publicProps} = props;
+  const {classNames, styles, children, ...curProps} = publicProps;
+  const {src, name, running, onClick, animateOpen, animateInOut, onAnimateStart, onAnimateStop} = curProps;
+
+  const padding = baseSize / 32 * 4;
   const placement = horizontal ? (magnifyDirection === 'primary' ? 'top' : 'bottom') :
     (magnifyDirection === 'primary' ? 'left' : 'right');
+  const animateOpenTransform = springValue => springValue.to({
+    range: [0, 0.166, 0.333, 0.499, 0.665, 0.831, 1],
+    output: [0, 50, 0, 50, 0, 50, 0]
+  }).to(x => `translate${horizontal ? 'Y' : 'X'}(${magnifyDirection === 'primary' ? -x : x}px)`)
 
   const [state, setState] = useState({
     hover: false,
+    dockItemAnchorRef: null,
   });
   const [spring, springApi] = useSpring(() => ({
     shift: 1,
     config: {duration: 1800},
+    onStart: (result, spring, item) => {
+      if (onAnimateStart) onAnimateStart('open', result.value.scale);
+    },
+    onRest: (result, spring, item) => {
+      if (onAnimateStop) onAnimateStop('open', result.value.scale);
+    }
   }));
 
   return (
     <animated.div
       className="dock-item-container"
       style={{
-        width: to([props.size, props.scale], (size, scale) => size * scale),
+        width: horizontal ? to([size, scale], (size, scale) => size * scale) : "auto",
+        height: !horizontal ? to([size, scale], (size, scale) => size * scale) : "auto",
+        zIndex: animateInOut ? scale.to(scale =>  scale === 1 ? "auto" : -1) : "auto",
         flexDirection: {top: "column", bottom: "column-reverse", left: "row", right: "row-reverse"}[placement],
-        torchAction: "none",
+        pointerEvents: scale.to(scale => scale === 1 ? "auto" : "none"),
+        border: debug ? "1px solid red" : null,
       }}
       onMouseEnter={() => {
         setState({...state, hover: true})
@@ -39,10 +57,7 @@ function DockItem(props) {
         className="dock-item-tooltip"
         style={{
           display: state.hover ? "initial" : "none",
-          transform: !animation.open ? "none" : spring.shift.to({
-            range: [0, 0.166, 0.333, 0.499, 0.665, 0.831, 1],
-            output: [0, 50, 0, 50, 0, 50, 0]
-          }).to(shift => `translate${horizontal ? 'Y' : 'X'}(${magnifyDirection === 'primary' ? -shift : shift}px)`),
+          transform: animateOpenTransform(spring.shift),
         }}
       >
         <Tooltip
@@ -54,35 +69,49 @@ function DockItem(props) {
       <animated.div
         className="dock-item"
         style={{
-          // width: to([props.size, props.scale], (size, scale) => size * scale),
-          width: "100%",
-          height: to([props.size, props.scale], (size, scale) => size * scale),
-          padding: baseSize / 32 * 4,
-          transform: !animation.open ? "none" : spring.shift.to({
-            range: [0, 0.166, 0.333, 0.499, 0.665, 0.831, 1],
-            output: [0, 50, 0, 50, 0, 50, 0]
-          }).to(shift => `translate${horizontal ? 'Y' : 'X'}(${magnifyDirection === 'primary' ? -shift : shift}px)`),
+          width: horizontal ? "100%" : to([size, scale], (size, scale) => size * scale),
+          height: !horizontal ? "100%" : to([size, scale], (size, scale) => size * scale),
+          padding: scale.to(scale => scale * padding),
+          transform: animateOpenTransform(spring.shift),
           border: debug ? "1px solid blue" : null,
         }}
         onClick={() => {
-          if (!running) {
-            springApi.start({from: {shift: 0}, shift: 1})
-          }
-
+          if (animateOpen && !animateInOut && !running) springApi.start({from: {shift: 0}, shift: 1})
           if (onClick) props.onClick()
         }}
       >
-        {React.Children.map(children, (item) => (
-          React.cloneElement(item, {
-            className: "dock-item-icon",
-            style: {
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              border: debug ? "1px solid yellow" : null,
-            }
-          })
-        ))}
+        <animated.div
+          ref={ref => {
+            if (!state.dockItemAnchorRef && ref) setState(state => ({...state, dockItemAnchorRef: ref}))
+          }}
+          className="dock-item-anchor"
+          style={{
+            width: animateInOut ? size.to(size => size - 2 * padding) : "100%",
+            height: animateInOut ? size.to(size => size - 2 * padding) : "100%",
+          }}
+        >
+          {!state.dockItemAnchorRef ? null :
+            <animated.img
+              className="dock-item-icon"
+              style={{
+                transform: !animateInOut ? "none" : scale.to(scale => {
+                  const inOutRect = animateInOut.current.getBoundingClientRect();
+                  const anchorRect = state.dockItemAnchorRef.getBoundingClientRect();
+
+                  const x = (inOutRect.x - anchorRect.x) * (1 - scale);
+                  const y = (inOutRect.y - anchorRect.y) * (1 - scale);
+
+                  const maxWH = Math.max(inOutRect.width, inOutRect.height);
+                  const scaleWH = ((maxWH / anchorRect.width) - 1) * (1 - scale);
+
+                  return `translate(${x}px, ${y}px) scale(${scaleWH + 1})`
+                }),
+                border: debug ? "1px solid yellow" : null,
+              }}
+              src={src}
+            />
+          }
+        </animated.div>
       </animated.div>
 
       <div
@@ -95,34 +124,44 @@ function DockItem(props) {
   );
 }
 
-export default DockItem;
-/*
-        <animated.div
-          style={{
-            // width: props.hidden ? "100%" : props.scale.to(scale => `${size * (-4 * scale + 5)}px`),
-            // height: props.hidden ? "100%" : props.scale.to(scale => `${size * (-4 * scale + 5)}px`),
-            // width: props.hidden ? "100%" : to([props.scale, props.size], (scale, size) => `${size * (-4 * scale + 5)}px`),
-            // height: props.hidden ? "100%" : to([props.scale, props.size], (scale, size) => `${size * (-4 * scale + 5)}px`),
-            // width: to([props.scale, props.size], (scale, size) => `${size * (-4 * scale + 5)}px`),
-            // height: to([props.scale, props.size], (scale, size) => `${size * (-4 * scale + 5)}px`),
-            width: size.to(size => size - 2 * baseSize / 32 * 4),
-            height: size.to(size => size - 2 * baseSize / 32 * 4),
-            transform: to([size, props.scale], (size, scale) =>
-              `translate(0, ${(1 - scale) * -500}px) scale(${(-4 * scale + 5)})`
-            )
-          }}
-        >
-          {React.Children.map(children, (item) => (
-            React.cloneElement(item, {
-              className: "dock-item-icon",
-              style: {
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                // border: debug ? "1px solid yellow" : null,
-              }
-            })
-          ))}
-        </animated.div>
+DockItem.propTypes = {
+  /** The unique identifier for this dockItem */
+  id: PropTypes.any.isRequired,
+  /** The dock item icon image URL. */
+  src: PropTypes.string,
+  /** The name of the dockItem. */
+  name: PropTypes.string,
+  /** If True, a dot indicator will appear under the icon. */
+  running: PropTypes.bool,
+  /** Callback function when the dockItem is clicked. */
+  onClick: PropTypes.func,
+  /** If True, a bounce animation will be triggered everytime the dockItem is clicked. */
+  animateOpen: PropTypes.bool,
+  /** A ref to another element. If provided, a minimize/maximize animation will be triggered when the item is added or removed */
+  animateInOut: PropTypes.shape({
+    current: PropTypes.shape({
+      getBoundingClientRect: PropTypes.func.isRequired,
+    }),
+  }),
+  /**
+   * Callback function called when a animation starts.
+   * Signature: onAnimateStart(type: string, value: Number) => void.
+   * `type` can be 'open' and 'inOut'.
+   * `value` has range from 0 to 1.
+   */
+  onAnimateStart: PropTypes.func,
+  /**
+   * Callback function called when a animation stops.
+   * Signature: onAnimateStop(type: string, value: Number) => void.
+   * `type` can be 'open' and 'inOut'.
+   * `value` has range from 0 to 1.
+   */
+  onAnimateStop: PropTypes.func
+}
 
- */
+DockItem.defaultProps = {
+  running: false,
+  animateOpen: true,
+}
+
+export default DockItem;
