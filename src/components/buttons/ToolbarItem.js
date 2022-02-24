@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import "./ToolbarItem.scss"
 import * as style from "../../style";
+import Button from "./Button";
 
 const VARIANTS = {
   'focused': {
@@ -32,8 +33,7 @@ const ToolbarItem = forwardRef((props, ref) => {
   const {size, variant, disabled, ...rootProps} = curProps;
 
   const [state, setState] = useState({
-    hover: false,
-    active: false,
+    hover: false, active: false,
   })
 
   return (
@@ -46,22 +46,23 @@ const ToolbarItem = forwardRef((props, ref) => {
         boxShadow: VARIANTS[variant].boxShadow,
         color: VARIANTS[variant].color,
         filter: disabled ? undefined : (state.active ? style.filterDarken : undefined),
+        pointerEvents: disabled ? "none" : "auto",
       }}
-      onMouseUp={(e) => {
+      onMouseUp={(event) => {
         if (!disabled) setState({...state, active: false});
-        if (rootProps.onMouseUp) rootProps.onMouseUp(e);
+        if (rootProps.onMouseUp) rootProps.onMouseUp(event);
       }}
-      onMouseDown={(e) => {
+      onMouseDown={(event) => {
         if (!disabled) setState({...state, active: true});
-        if (rootProps.onMouseDown) rootProps.onMouseDown(e);
+        if (rootProps.onMouseDown) rootProps.onMouseDown(event);
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={(event) => {
         if (!disabled) setState({...state, hover: true});
-        if (rootProps.onMouseEnter) rootProps.onMouseEnter(e);
+        if (rootProps.onMouseEnter) rootProps.onMouseEnter(event);
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={(event) => {
         if (!disabled) setState({...state, hover: false});
-        if (rootProps.onMouseLeave) rootProps.onMouseLeave(e);
+        if (rootProps.onMouseLeave) rootProps.onMouseLeave(event);
       }}
       {...rootProps}
     >
@@ -79,6 +80,11 @@ ToolbarItem.propTypes = {
   variant: PropTypes.oneOf(['focused', 'selected', 'deselected', 'disabled']),
   /** Whether the button is disabled. */
   disabled: PropTypes.bool,
+}
+
+ToolbarItem.defaultProps = {
+  variant: 'focused',
+  disabled: false,
 }
 
 export default ToolbarItem;

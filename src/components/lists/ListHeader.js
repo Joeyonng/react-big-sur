@@ -42,7 +42,7 @@ ListHeader.propTypes = {
   title: PropTypes.string,
   /** The tail of the subtitle. */
   tail: PropTypes.node,
-  /** Always show tail, if any. */
+  /** Always show tail, if any. Otherwise, only show tail if on hover */
   hideTail: PropTypes.bool,
 }
 

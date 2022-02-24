@@ -1,4 +1,5 @@
 import React, {useMemo, useRef, useState} from "react";
+import PropTypes from "prop-types";
 import {useSpring, useTransition, to, animated} from "react-spring";
 import {create, all} from 'mathjs'
 
@@ -6,13 +7,12 @@ import {DockItem, DockDivider} from "../../index";
 
 import * as style from "../../style";
 import "./DockContainer.scss"
-import PropTypes from "prop-types";
 
 const math = create(all, {matrix: 'Array'});
 
 function DockContainer(props) {
   const {classNames, styles, children, ...curProps} = props;
-  const {center, baseSize, largeSize, spreading, horizontal, magnifyDirection, debug, ...rootProps} = curProps;
+  const {baseSize, largeSize, spreading, horizontal, magnifyDirection, debug, ...rootProps} = curProps;
 
   const getPercents = (cursorRel, scales) => {
     const distances = math.abs(math.subtract(scales, cursorRel));
@@ -57,7 +57,10 @@ function DockContainer(props) {
   }
 
   const getCursorRel = (cursor) => {
-    const cursorRel = cursor ? cursor - (center - getDockWidth(null) / 2) : null;
+    if (!dockRef.current || cursor === null) return null;
+    const dockRect = dockRef.current.getBoundingClientRect();
+
+    const cursorRel = cursor - (horizontal ? dockRect.x : dockRect.y) - getDockOffset(null, true)
     return cursorRel < 0 || cursorRel > getDockWidth(null) ? null : cursorRel;
   }
 
@@ -161,7 +164,7 @@ function DockContainer(props) {
           }[magnifyDirection],
         }}
         onMouseMove={(event) => {
-          const cursor = horizontal ? event.pageX : event.pageY;
+          const cursor = horizontal ? event.clientX : event.clientY;
           setState({...state, cursor: cursor})
         }}
         onMouseLeave={(event) => {
@@ -197,8 +200,6 @@ function DockContainer(props) {
 }
 
 DockContainer.propTypes = {
-  /** The center coordinate of DockContainer. If horizontal=True, use X coordinate. Otherwise, ues Y coordinate. */
-  center: PropTypes.number.isRequired,
   /** The unmagnified size of the item. Suggested ranges: [16, 128]. */
   baseSize: PropTypes.number,
   /** The magnified size of the item. Suggested ranges: [16, 128]. */

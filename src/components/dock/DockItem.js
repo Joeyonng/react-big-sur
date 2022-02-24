@@ -10,7 +10,7 @@ import "./DockItem.scss"
 function DockItem(props) {
   const {size, scale, baseSize, horizontal, magnifyDirection, debug, ...publicProps} = props;
   const {classNames, styles, children, ...curProps} = publicProps;
-  const {src, name, running, onClick, animateOpen, animateInOut, onAnimateStart, onAnimateStop} = curProps;
+  const {src, subSrc, name, running, onClick, animateOpen, animateDOMRect, onAnimateStart, onAnimateStop} = curProps;
 
   const padding = baseSize / 32 * 4;
   const placement = horizontal ? (magnifyDirection === 'primary' ? 'top' : 'bottom') :
@@ -41,7 +41,7 @@ function DockItem(props) {
       style={{
         width: horizontal ? to([size, scale], (size, scale) => size * scale) : "auto",
         height: !horizontal ? to([size, scale], (size, scale) => size * scale) : "auto",
-        zIndex: animateInOut ? scale.to(scale =>  scale === 1 ? "auto" : -1) : "auto",
+        zIndex: animateDOMRect ? scale.to(scale =>  scale === 1 ? "auto" : -1) : "auto",
         flexDirection: {top: "column", bottom: "column-reverse", left: "row", right: "row-reverse"}[placement],
         pointerEvents: scale.to(scale => scale === 1 ? "auto" : "none"),
         border: debug ? "1px solid red" : null,
@@ -76,7 +76,7 @@ function DockItem(props) {
           border: debug ? "1px solid blue" : null,
         }}
         onClick={() => {
-          if (animateOpen && !animateInOut && !running) springApi.start({from: {shift: 0}, shift: 1})
+          if (animateOpen && !animateDOMRect && !running) springApi.start({from: {shift: 0}, shift: 1})
           if (onClick) props.onClick()
         }}
       >
@@ -86,29 +86,42 @@ function DockItem(props) {
           }}
           className="dock-item-anchor"
           style={{
-            width: animateInOut ? size.to(size => size - 2 * padding) : "100%",
-            height: animateInOut ? size.to(size => size - 2 * padding) : "100%",
+            width: animateDOMRect ? size.to(size => size - 2 * padding) : "100%",
+            height: animateDOMRect ? size.to(size => size - 2 * padding) : "100%",
+            border: debug ? "1px solid yellow" : null,
           }}
         >
           {!state.dockItemAnchorRef ? null :
             <animated.img
               className="dock-item-icon"
               style={{
-                transform: !animateInOut ? "none" : scale.to(scale => {
-                  const inOutRect = animateInOut.current.getBoundingClientRect();
+                transform: !animateDOMRect ? "none" : scale.to(scale => {
                   const anchorRect = state.dockItemAnchorRef.getBoundingClientRect();
 
-                  const x = (inOutRect.x - anchorRect.x) * (1 - scale);
-                  const y = (inOutRect.y - anchorRect.y) * (1 - scale);
+                  const x = (animateDOMRect.x - anchorRect.x) * (1 - scale);
+                  const y = (animateDOMRect.y - anchorRect.y) * (1 - scale);
 
-                  const maxWH = Math.max(inOutRect.width, inOutRect.height);
+                  const maxWH = Math.max(animateDOMRect.width, animateDOMRect.height);
                   const scaleWH = ((maxWH / anchorRect.width) - 1) * (1 - scale);
 
                   return `translate(${x}px, ${y}px) scale(${scaleWH + 1})`
                 }),
-                border: debug ? "1px solid yellow" : null,
               }}
+              alt={name}
               src={src}
+            />
+          }
+
+          {!subSrc ? null :
+            <animated.img
+              className="dock-item-sub"
+              style={{
+                right: baseSize / 128 * 4,
+                bottom: baseSize / 128 * 4,
+                display: scale.to(scale => scale === 1 ? "initial" : "none"),
+              }}
+              alt={`${name}-sub`}
+              src={subSrc}
             />
           }
         </animated.div>
@@ -129,6 +142,8 @@ DockItem.propTypes = {
   id: PropTypes.any.isRequired,
   /** The dock item icon image URL. */
   src: PropTypes.string,
+  /** The sub dock item icon image URL. */
+  subSrc: PropTypes.string,
   /** The name of the dockItem. */
   name: PropTypes.string,
   /** If True, a dot indicator will appear under the icon. */
@@ -137,12 +152,11 @@ DockItem.propTypes = {
   onClick: PropTypes.func,
   /** If True, a bounce animation will be triggered everytime the dockItem is clicked. */
   animateOpen: PropTypes.bool,
-  /** A ref to another element. If provided, a minimize/maximize animation will be triggered when the item is added or removed */
-  animateInOut: PropTypes.shape({
-    current: PropTypes.shape({
-      getBoundingClientRect: PropTypes.func.isRequired,
-    }),
-  }),
+  /**
+   * A DOMRect of an element.
+   * If provided, a minimize/maximize animation will be triggered when the item is added or removed.
+   */
+  animateDOMRect: PropTypes.instanceOf(DOMRect),
   /**
    * Callback function called when a animation starts.
    * Signature: onAnimateStart(type: string, value: Number) => void.

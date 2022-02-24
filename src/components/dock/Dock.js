@@ -1,34 +1,19 @@
 import React, {useEffect, useRef, useState} from "react";
+import PropTypes from "prop-types";
 
 import DockContainer from "./DockContainer";
 
 import * as style from "../../style";
 import "./Dock.scss"
-import PropTypes from "prop-types";
 
 function Dock(props) {
   const {classNames, styles, children, ...curProps} = props;
   const {baseSize, largeSize, position, debug, ...rootProps} = curProps;
   const horizontal = ['top', 'bottom'].includes(position);
 
-  const [state, setState] = useState({
-    center: null,
-  });
-
-  const ref = useRef();
-  useEffect(() => {
-    if (ref) {
-      const rect = ref.current.getBoundingClientRect();
-      setState(state => ({
-        ...state,
-        center: horizontal ? rect.x + rect.width / 2 : rect.y + rect.height / 2,
-      }));
-    }
-  }, [ref]);
 
   return (
     <div
-      ref={ref}
       className="dock"
       style={{
         ...[{
@@ -42,7 +27,6 @@ function Dock(props) {
       }}
     >
       <DockContainer
-        center={state.center}
         baseSize={baseSize}
         largeSize={largeSize}
         spreading={3}
@@ -56,7 +40,7 @@ function Dock(props) {
   );
 }
 
-DockContainer.propTypes = {
+Dock.propTypes = {
   /** The unmagnified size of the item. Suggested ranges: [16, 128]. */
   baseSize: PropTypes.number,
   /** The magnified size of the item. Suggested ranges: [16, 128]. */
@@ -67,7 +51,7 @@ DockContainer.propTypes = {
   debug: PropTypes.bool,
 }
 
-DockContainer.defaultProps = {
+Dock.defaultProps = {
   baseSize: 64,
   largeSize: 128,
   position: 'bottom',

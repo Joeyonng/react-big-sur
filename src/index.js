@@ -32,3 +32,4 @@ export {default as TrafficLights} from './components/traffic-lights/TrafficLight
 export {default as AnimatedWindow} from './components/windows/AnimatedWindow';
 export {default as TitleBarWindow} from './components/windows/TitleBarWindow';
 export {default as ToolbarWindow} from './components/windows/ToolbarWindow';
+export {default as ColumnView} from './components/views/ColumnView';

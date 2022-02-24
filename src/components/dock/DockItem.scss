@@ -26,6 +26,7 @@
     }
 
     .dock-item-anchor {
+      position: relative;
       box-sizing: border-box;
 
       display: flex;
@@ -39,6 +40,17 @@
         box-sizing: border-box;
 
         transform-origin: top left;
+
+        pointer-events: none;
+        object-fit: contain;
+      }
+
+      .dock-item-sub {
+        width: 35%;
+        height: 35%;
+        box-sizing: border-box;
+
+        position: absolute;
 
         pointer-events: none;
         object-fit: contain;

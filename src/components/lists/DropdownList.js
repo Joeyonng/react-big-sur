@@ -34,6 +34,7 @@ const DropdownList = forwardRef((props, ref) => {
             {state.open ? <ChevronDown size={style.icon1}/> : <ChevronRight size={style.icon1}/>}
           </div>
         }
+        hideTail={!loading}
       />
 
       <Collapse open={state.open}>

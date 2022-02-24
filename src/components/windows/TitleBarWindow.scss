@@ -29,14 +29,15 @@
 
     user-select: none;
   }
-}
 
-.lights {
-  position: absolute;
-  left: $space1;
-}
+  .lights {
+    position: absolute;
+    left: $space1;
+  }
 
-.window-content {
-  flex: 1;
-  overflow: auto;
+  .window-content {
+    flex: 1;
+
+    overflow: auto;
+  }
 }

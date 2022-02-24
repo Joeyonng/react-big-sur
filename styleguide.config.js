@@ -70,7 +70,7 @@ module.exports = {
           content: './src/components/dock/dock.md',
         },
         {
-          name: 'Notification Center',
+          name: 'Notifications',
           sectionDepth: 1,
           content: './src/components/notification-center/notification-center.md',
         },
@@ -86,6 +86,11 @@ module.exports = {
           name: 'Windows',
           sectionDepth: 1,
           content: './src/components/windows/windows.md',
+        },
+        {
+          name: 'Column View',
+          sectionDepth: 1,
+          content: './src/components/views/ColumnView.md',
         },
       ]
     },

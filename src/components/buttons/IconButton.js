@@ -69,6 +69,7 @@ const IconButton = forwardRef((props, ref) => {
         filter: state.active && variant !== 'secondary' ? style.filterDarken : undefined,
         fontSize: SIZES[size].fontSize,
         lineHeight: SIZES[size].lineHeight,
+        pointerEvents: disabled ? "none" : "auto",
       }}
       onMouseUp={(e) => {
         if (!disabled) setState({...state, active: false})
