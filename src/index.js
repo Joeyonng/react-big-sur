@@ -18,6 +18,7 @@ export {default as MenuButtonGroup} from './components/menus/MenuButtonGroup';
 export {default as MenuDivider} from './components/menus/MenuDivider';
 export {default as MenuItem} from './components/menus/MenuItem';
 export {default as MenuSelection} from './components/menus/MenuSelection';
+export {default as MenuBarMenus} from './components/menus/MenuBarMenus';
 export {default as Notification} from './components/notification-center/Notification';
 export {default as NotificationCenter} from './components/notification-center/NotificationCenter';
 export {default as Notifications} from './components/notification-center/Notifications';

@@ -1,6 +1,6 @@
 import React, {forwardRef, useEffect, useRef, useState} from 'react';
 
-import {Popover} from "../utils/Popover";
+import Popover from "../utils/Popover";
 
 import * as style from "../../style";
 import './MenuButton.scss';
@@ -69,8 +69,8 @@ const MenuButton = forwardRef((props, ref) => {
       {children === undefined ? null :
         <Popover
           open={menuOpen}
-          anchorRef={buttonRef}
-          anchorDir="y"
+          anchorEl={buttonRef.current}
+          anchorOriginY='bottom'
         >
           {React.Children.map(children, (item) => (
             React.cloneElement(item, {

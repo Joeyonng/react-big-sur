@@ -2,7 +2,7 @@ import React, {forwardRef, useRef, useState} from "react";
 import PropTypes from "prop-types";
 
 import ListItem from "../lists/ListItem";
-import {Popover} from "../utils/Popover";
+import Popover from "../utils/Popover";
 
 import * as style from "../../style";
 
@@ -43,10 +43,11 @@ const MenuItem = forwardRef((props, ref) => {
 
       <Popover
         open={state.menuOpen}
-        anchorRef={listItemRef}
-        anchorDir="x"
+        anchorEl={listItemRef.current}
+        anchorOriginX='right'
+        anchorOriginY='top'
         offset={{
-          y: -style.rmPx(style.space7)
+          top: -style.rmPx(style.space7)
         }}
       >
         {children}
