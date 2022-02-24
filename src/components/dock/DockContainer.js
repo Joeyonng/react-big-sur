@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import {useSpring, useTransition, to, animated} from "react-spring";
 import {create, all} from 'mathjs'
 
-import {DockItem, DockDivider} from "../../index";
+import DockItem from "./DockItem";
+import DockDivider from "./DockDivider";
 
 import * as style from "../../style";
 import "./DockContainer.scss"

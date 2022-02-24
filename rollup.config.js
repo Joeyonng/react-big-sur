@@ -24,6 +24,7 @@ export default [
     plugins: [
       peerDepsExternal(),
       babel({
+        babelHelpers: 'runtime',
         exclude: "node_modules/**"
       }),
       resolve(),

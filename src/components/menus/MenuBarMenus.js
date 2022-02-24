@@ -1,9 +1,13 @@
 import React, {forwardRef, useEffect, useRef, useState} from "react";
+import PropTypes from "prop-types";
 import {useEnsuredForwardedRef} from "react-use";
 
-import * as style from "../../style";
 import Menu from "./Menu";
-import Popover from "../utils/Popover";
+import MenuItem from "./MenuItem";
+import Popover from "../popovers/Popover";
+
+import * as style from "../../style";
+import "./MenuBarMenus.scss";
 
 const MenuBarMenus = forwardRef((props, ref) => {
   const {classNames, styles, children, ...curProps} = props;
@@ -52,8 +56,8 @@ const MenuBarMenus = forwardRef((props, ref) => {
               if (state.openIndex !== -1) setState({...state, openIndex: index});
             }}
           >
-            {typeof menu.props.title === "string" ? menu.props.title :
-              React.Children.map(menu.props.title, (item) => (
+            {typeof menu.props.label === "string" ? menu.props.label :
+              React.Children.map(menu.props.label, (item) => (
                 React.cloneElement(item, {
                   className: "menu-button-content",
                 })
@@ -73,5 +77,11 @@ const MenuBarMenus = forwardRef((props, ref) => {
     </div>
   )
 });
+
+MenuItem.propTypes = {
+}
+
+MenuItem.defaultProps = {
+}
 
 export default MenuBarMenus;

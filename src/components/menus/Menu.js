@@ -2,6 +2,8 @@ import React, {forwardRef} from 'react';
 import PropTypes from "prop-types";
 
 import List from "../lists/List";
+import MenuItem from "./MenuItem";
+import MenuSelection from "./MenuSelection";
 
 import './Menu.scss';
 
@@ -15,10 +17,16 @@ const Menu = forwardRef((props, ref) => {
       {...rootProps}
     >
       <List
-        size={size}
         width={width}
       >
-        {children}
+        {React.Children.map(children, item => {
+          if (item.type !== MenuItem && item.type !== MenuSelection) return item;
+
+          let newProps = Object.assign({}, item.props);
+          if (size) newProps['size'] = size;
+
+          return React.cloneElement(item, newProps)
+        })}
       </List>
     </div>
   )
@@ -29,6 +37,8 @@ Menu.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   /** The size of the menu items in the menu. */
   size: PropTypes.oneOf(['large', 'medium', 'small']),
+  /** The label of the menu to be appeared in MenuBarMenus. */
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.elementType])
 }
 
 Menu.defaultProps = {

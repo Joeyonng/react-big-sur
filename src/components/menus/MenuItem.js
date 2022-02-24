@@ -2,7 +2,7 @@ import React, {forwardRef, useRef, useState} from "react";
 import PropTypes from "prop-types";
 
 import ListItem from "../lists/ListItem";
-import Popover from "../utils/Popover";
+import Popover from "../popovers/Popover";
 
 import * as style from "../../style";
 

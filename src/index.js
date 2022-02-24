@@ -13,8 +13,6 @@ export {default as ListDivider} from './components/lists/ListDivider';
 export {default as ListHeader} from './components/lists/ListHeader';
 export {default as ListItem} from './components/lists/ListItem';
 export {default as Menu} from './components/menus/Menu';
-export {default as MenuButton} from './components/menus/MenuButton';
-export {default as MenuButtonGroup} from './components/menus/MenuButtonGroup';
 export {default as MenuDivider} from './components/menus/MenuDivider';
 export {default as MenuItem} from './components/menus/MenuItem';
 export {default as MenuSelection} from './components/menus/MenuSelection';

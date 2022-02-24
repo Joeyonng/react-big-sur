@@ -17,7 +17,7 @@ const List = forwardRef((props, ref) => {
       }}
       {...rootProps}
     >
-      {React.Children.map(props.children, item => {
+      {React.Children.map(children, item => {
         if (item.type !== ListItem) return item;
 
         let newProps = Object.assign({}, item.props);

@@ -4,29 +4,15 @@ Simple `Menu` with `MenuItem`.
 import {Menu, MenuItem, MenuDivider} from "react-big-sur";
 
 <div className="row">
-  <Menu size="small">
-    <MenuItem primary="I am a MenuItem"/>
-    <MenuItem primary="Menu = <div/>"/>
-    <MenuItem primary="MenuItem = ListItem"/>
-    <MenuDivider/>
-    <MenuItem primary="MenuDivider = ListDivider"/>
-  </Menu>
-
-  <Menu size="medium">
-    <MenuItem primary="I am a MenuItem"/>
-    <MenuItem primary="Menu = <div/>"/>
-    <MenuItem primary="MenuItem = ListItem"/>
-    <MenuDivider/>
-    <MenuItem primary="MenuDivider = ListDivider"/>
-  </Menu>
-
-  <Menu size="large">
-    <MenuItem primary="I am a MenuItem"/>
-    <MenuItem primary="Menu = <div/>"/>
-    <MenuItem primary="MenuItem = ListItem"/>
-    <MenuDivider/>
-    <MenuItem primary="MenuDivider = ListDivider"/>
-  </Menu>
+  {['small', 'medium', 'large'].map(size => (
+    <Menu size={size}>
+      <MenuItem primary="I am a MenuItem"/>
+      <MenuItem primary="Menu = <div/>"/>
+      <MenuItem primary="MenuItem = ListItem"/>
+      <MenuDivider/>
+      <MenuItem primary="MenuDivider = ListDivider"/>
+    </Menu>
+  ))}
 </div>
 ```
 
@@ -89,7 +75,7 @@ import {MenuBarMenus, Menu, MenuItem} from "react-big-sur";
 <div className="row background">
   <MenuBarMenus>
     {[1, 2, 3, 4].map(item => (
-      <Menu key={item} title={`Menu ${item}`}>
+      <Menu key={item} label={`Menu ${item}`}>
         <MenuItem primary="I have a submenu :)">
           <Menu>
             <MenuItem primary="I am in a submenu!"/>
