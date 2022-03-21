@@ -4,16 +4,17 @@ import clsx from 'clsx';
 
 import TrafficLights from "../traffic-lights/TrafficLights";
 
-import * as style from "../../style";
 import "./ToolbarWindow.scss";
+import * as style from "../../style";
 
-const ToolbarWindow = forwardRef((props, ref) => {
+const ToolbarWindow = forwardRef(function ToolbarWindow(props, ref) {
   const {classNames, styles, children, ...curProps} = props
   const {width, height, focus, backgroundColor, onCloseClick, onMinimizeClick, onMaximizeClick, onToolbarDoubleClick,
     toolbar, sidebar, ...rootProps} = curProps
 
   return (
     <div
+      {...rootProps}
       ref={ref}
       className={clsx("toolbar-window", classNames['root'])}
       style={{
@@ -22,7 +23,6 @@ const ToolbarWindow = forwardRef((props, ref) => {
         boxShadow: focus ? style.shadow1 : "none",
         ...styles['root'],
       }}
-      {...rootProps}
     >
       {!sidebar ? null :
         <div

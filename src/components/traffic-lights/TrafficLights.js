@@ -2,43 +2,12 @@ import React, {forwardRef, useState} from "react";
 import PropTypes from "prop-types";
 import {X, Minus, Plus} from "react-feather"
 
-import * as style from "../../style";
+import TrafficLight from "./TrafficLight";
+
 import "./TrafficLights.scss"
+import * as style from "../../style";
 
-const TrafficLight = forwardRef((props, ref) => {
-  const {classNames, styles, children, ...curProps} = props;
-  const {hover, focus, color, ...rootProps} = curProps;
-
-  const [state, setState] = useState({
-    active: false,
-  })
-
-  return (
-    <button
-      ref={ref}
-      className="traffic-light"
-      style={{
-        backgroundColor: hover ? color : (focus ? color : style.grey2),
-        filter: state.active ? style.filterDarken : undefined,
-      }}
-      onMouseUp={(e) => {
-        setState({active: false});
-        if (rootProps.onMouseUp) rootProps.onMouseUp(e);
-      }}
-      onMouseDown={(e) => {
-        setState({active: true});
-        if (rootProps.onMouseDown) rootProps.onMouseDown(e);
-      }}
-      {...rootProps}
-    >
-      {!hover ? null : React.cloneElement(children, {
-        className: "traffic-light-icon"
-      })}
-    </button>
-  )
-});
-
-const TrafficLights = forwardRef((props, ref) => {
+const TrafficLights = forwardRef(function TrafficLights(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {focus, onCloseClick, onMinimizeClick, onMaximizeClick, ...rootProps} = curProps;
 
@@ -48,6 +17,7 @@ const TrafficLights = forwardRef((props, ref) => {
 
   return (
     <div
+      {...rootProps}
       ref={ref}
       className="traffic-lights"
       onMouseEnter={() => {
@@ -56,7 +26,6 @@ const TrafficLights = forwardRef((props, ref) => {
       onMouseLeave={() => {
         setState({...state, hover: false})
       }}
-      {...rootProps}
     >
       <TrafficLight
         hover={state.hover}

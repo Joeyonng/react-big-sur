@@ -1,0 +1,48 @@
+@import "../../style";
+
+// Use a separate layer for the background since "mask" property cannot be applied to background.
+.notification-center-background {
+  width: $widgetsWidth;
+  height: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+
+  -webkit-mask:
+          linear-gradient(to right,
+                  rgba($white, 0) 0%,
+                  rgba($white, 1) calc(#{$titleBarHeight} + #{$widgetGap}),
+                  rgba($white, 1) calc(100% - #{$titleBarHeight} - #{$widgetGap}),
+                  rgba($white, 0) 100%),
+          linear-gradient(to bottom,
+                  rgba($white, 0) 0%,
+                  rgba($white, 1) $titleBarHeight,
+                  rgba($white, 1) calc(100% - #{$titleBarHeight} - #{$widgetGap}),
+                  rgba($white, 0) 100%);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in;
+  backdrop-filter: $filterBlur;
+
+  pointer-events: none;
+}
+
+.notification-center {
+  width: $widgetsWidth;
+  max-height: 100%;
+  box-sizing: border-box;
+  position: absolute;
+
+  overflow: auto;
+  //pointer-events: none; // avoid scrolling when hidden
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  .widgets-container {
+    position: relative;
+    top: 0;
+  }
+}

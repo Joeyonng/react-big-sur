@@ -3,22 +3,22 @@ import PropTypes from "prop-types";
 
 import "./Segment.scss"
 
-const Segment = forwardRef((props, ref) => {
+const Segment = forwardRef(function Segment(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {selected, onSelect, ...rootProps} = curProps;
 
   return (
     <div
+      {...rootProps}
       ref={ref}
       className={selected ? "segment selected" : "segment"}
       onClick={() => {
         if (onSelect) onSelect();
         if (rootProps.onClick) rootProps.onClick();
       }}
-      {...rootProps}
     >
       {typeof children === "string" ? children :
-        React.Children.map(children, (item) => (
+        React.Children.toArray(children).filter(Boolean).map((item) => (
           React.cloneElement(item, {
             className: "segment-content",
           })

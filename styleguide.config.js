@@ -1,78 +1,38 @@
 const path = require('path');
 
 module.exports = {
-  webpackConfig: {
-    module: {
-      rules: [
-        {
-          test: /\.jsx?$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader'
-        },
-        {
-          test: /\.(s?)css$/,
-          use: ['style-loader', 'css-loader', 'sass-loader'],
-        },
-        {
-          test: /\.(png|jpg|jpeg|webp|gif)$/,
-          use: ['url-loader'],
-        },
-        {
-          test: /\.svg$/,
-          use: ['@svgr/webpack', 'url-loader'],
-        },
-      ]
-    },
-  },
   title: 'React Big Sur',
-  exampleMode: 'expand',
+  exampleMode: 'collapse',
   usageMode: 'expand',
   tocMode: 'expand',
   pagePerSection: true,
   sortProps: props => props,
   moduleAliases: {
     'react-big-sur': path.resolve(__dirname, 'src'),
-    'media': path.resolve(__dirname, 'src', 'media'),
+    'icons': path.resolve(__dirname, 'src', 'icons'),
   },
-  styles: {
-    StyleGuide: {
-      '@global .row': {
-        width: '100%',
-
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-      },
-      '@global .background': {
-        // background: "url('https://i.redd.it/iibrptucse951.png')",
-        background: "url('https://wallpapercave.com/wp/wp6761052.jpg')",
-      },
-      '@global .canvas': {
-        width: 800,
-        height: 640,
-        position: 'relative',
-
-        backgroundColor: '#f0f0f0',
-      },
-    }
-  },
+  styles: path.resolve(__dirname, 'styleguide.styles.js'),
   sections: [
     {
       name: 'System Capabilities',
       sectionDepth: 2,
       external: true,
-      href: 'https://developer.apple.com/design/human-interface-guidelines/macos/system-capabilities/',
+      href: 'https://developer.apple.com/design/human-interface-guidelines/macos/system-capabilities/auto-save/',
       sections: [
         {
           name: 'Dock',
           sectionDepth: 1,
-          content: './src/components/dock/dock.md',
+          content: './src/components/docks/docks.md',
         },
         {
-          name: 'Notifications',
+          name: 'Notification Center',
           sectionDepth: 1,
-          content: './src/components/notification-center/notification-center.md',
+          content: './src/components/notification-centers/notification-centers.md',
+        },
+        {
+          name: 'Control Center',
+          sectionDepth: 1,
+          content: './src/components/control-centers/control-centers.md',
         },
       ]
     },
@@ -88,9 +48,14 @@ module.exports = {
           content: './src/components/windows/windows.md',
         },
         {
-          name: 'Column View',
+          name: 'Column Views',
           sectionDepth: 1,
-          content: './src/components/views/ColumnView.md',
+          content: './src/components/column-views/column-views.md',
+        },
+        {
+          name: 'Toolbars',
+          sectionDepth: 1,
+          content: './src/components/toolbars/toolbars.md',
         },
       ]
     },
@@ -114,9 +79,14 @@ module.exports = {
       href: 'https://developer.apple.com/design/human-interface-guidelines/macos/buttons/',
       sections: [
         {
-          name: 'All Buttons',
+          name: 'Push Buttons',
           sectionDepth: 1,
-          content: './src/components/buttons/buttons.md',
+          content: './src/components/push-buttons/push-buttons.md',
+        },
+        {
+          name: 'Help Buttons',
+          sectionDepth: 1,
+          content: './src/components/help-buttons/help-buttons.md',
         },
       ]
     },
@@ -145,14 +115,9 @@ module.exports = {
       href: 'https://developer.apple.com/design/human-interface-guidelines/macos/indicators/',
       sections: [
         {
-          name: 'Indicators',
+          name: 'Progress Indicators',
           sectionDepth: 1,
-          content: './src/components/indicators/indicators.md',
-        },
-        {
-          name: 'Progress',
-          sectionDepth: 1,
-          content: './src/components/progress/progress.md',
+          content: './src/components/progress-indicators/progress-indicators.md',
         },
       ]
     },
@@ -162,19 +127,24 @@ module.exports = {
       external: true,
       sections: [
         {
-          name: 'Traffic Lights',
-          sectionDepth: 1,
-          content: './src/components/traffic-lights/traffic-lights.md',
-        },
-        {
           name: 'Lists',
           sectionDepth: 1,
           content: './src/components/lists/lists.md',
         },
         {
+          name: 'Traffic Lights',
+          sectionDepth: 1,
+          content: './src/components/traffic-lights/traffic-lights.md',
+        },
+        {
           name: 'Tooltip',
           sectionDepth: 1,
-          content: './src/components/tooltip/tooltip.md',
+          content: './src/components/tooltips/tooltips.md',
+        },
+        {
+          name: 'Circular Bar',
+          sectionDepth: 1,
+          content: './src/components/circular-bars/circular-bars.md',
         },
       ]
     },
@@ -183,4 +153,27 @@ module.exports = {
       components: './src/components/**/*.{js,jsx,ts,tsx}',
     },
   ],
+  webpackConfig: {
+    module: {
+      rules: [
+        {
+          test: /\.jsx?$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader'
+        },
+        {
+          test: /\.(s?)css$/,
+          use: ['style-loader', 'css-loader', 'sass-loader'],
+        },
+        {
+          test: /\.(png|jpg|jpeg|webp|gif)$/,
+          use: ['url-loader'],
+        },
+        {
+          test: /\.svg$/,
+          use: ['@svgr/webpack', 'url-loader'],
+        },
+      ]
+    },
+  },
 }

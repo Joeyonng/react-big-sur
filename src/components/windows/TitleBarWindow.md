@@ -1,1 +1,3 @@
-Please see [Windows](http://localhost:6060/#/Windows) for usage examples.
+```jsx static
+import {TitleBarWindow} from "react-big-sur";
+```

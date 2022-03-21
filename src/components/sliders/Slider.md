@@ -1,1 +1,3 @@
-Please see [Sliders](http://localhost:6060/#/Sliders) for usage examples.
+```jsx static
+import {Slider} from "react-big-sur";
+```

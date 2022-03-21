@@ -1,87 +1,91 @@
-import React, {forwardRef, useEffect, useRef, useState} from "react";
+import React, {forwardRef, Fragment, useRef, useState} from "react";
 import PropTypes from "prop-types";
-import {useEnsuredForwardedRef} from "react-use";
-
-import Menu from "./Menu";
-import MenuItem from "./MenuItem";
-import Popover from "../popovers/Popover";
+import clsx from "clsx";
 
 import * as style from "../../style";
 import "./MenuBarMenus.scss";
 
-const MenuBarMenus = forwardRef((props, ref) => {
+const MenuBarMenus = forwardRef(function MenuBarMenus(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
-  const {...rootProps} = curProps;
-
-  const menus = React.Children.toArray(children).filter((item) => item.type === Menu)
+  const {labels, separate, overlap, onChange, ...rootProps} = curProps;
+  const menus = React.Children.toArray(children);
 
   const [state, setState] = useState({
     openIndex: -1,
-  })
-
-  const menuButtonGroupRef = useEnsuredForwardedRef(ref);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuButtonGroupRef.current && !menuButtonGroupRef.current.contains(event.target)) {
-        setState({...state, openIndex: -1});
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    activeIndex: -1,
   })
 
   const buttonsRef = useRef([]);
-
+  const buttonBackgroundsRef = useRef([]);
   return (
     <div
-      ref={menuButtonGroupRef}
-      className="menu-button-group"
-      style={{
-      }}
+      {...rootProps}
+      ref={ref}
+      className="menu-bar-menus"
     >
-      {menus.map((menu, index) => (
-        <div key={index}>
+      {React.Children.toArray(labels).filter(Boolean).map((label, index) => (
+        <Fragment key={index}>
           <div
-            ref={ref => buttonsRef.current.push(ref)}
+            ref={(node) => {buttonsRef.current[index] = node}}
             className="menu-button"
-            style={{
-              ...(state.openIndex === index ? style.glassBackground() : {}),
-            }}
-            onClick={() => {
+            onMouseDown={() => {
               setState({...state, openIndex: index});
+              if (onChange) onChange(index);
+            }}
+            onMouseUp={() => {
+              if (!menus[index] || menus[index].type === React.Fragment) setState({...state, openIndex: -1});
             }}
             onMouseOver={() => {
-              if (state.openIndex !== -1) setState({...state, openIndex: index});
+              if (!separate && menus[index] && menus[index].type !== React.Fragment && state.openIndex !== -1) {
+                setState({...state, openIndex: index});
+                if (onChange) onChange(index);
+              }
             }}
           >
-            {typeof menu.props.label === "string" ? menu.props.label :
-              React.Children.map(menu.props.label, (item) => (
+            <div
+              ref={(node) => {buttonBackgroundsRef.current[index] = node}}
+              className="menu-button-background"
+              style={{
+                width: `calc(100% + ${overlap ? style.space5 : '0px'})`,
+                ...(state.openIndex === index ? style.glassBackground() : {}),
+              }}
+            />
+
+            {typeof label === "string" ? label :
+              React.Children.toArray(label).filter(Boolean).map((item) => (
                 React.cloneElement(item, {
-                  className: "menu-button-content",
+                  className: clsx("menu-button-content", item.props.className),
                 })
               ))
             }
           </div>
 
-          <Popover
-            open={state.openIndex === index}
-            anchorEl={buttonsRef.current[index]}
-            anchorOriginY='bottom'
-          >
-            {menu}
-          </Popover>
-        </div>
+          {!menus[index] ? null : React.cloneElement(menus[index], {
+            open: state.openIndex === index,
+            anchorEl: buttonBackgroundsRef.current[index],
+            onClickOutside: (event) => {
+              if (!buttonsRef.current[index].contains(event.target)) {
+                setState({...state, openIndex: -1})
+                if (onChange) onChange(-1);
+              }
+            },
+            onClickInside: () => {
+              setState({...state, openIndex: -1})
+              if (onChange) onChange(-1);
+            },
+          })}
+        </Fragment>
       ))}
     </div>
   )
 });
 
-MenuItem.propTypes = {
+MenuBarMenus.propTypes = {
 }
 
-MenuItem.defaultProps = {
+MenuBarMenus.defaultProps = {
+  separate: false,
+  overlap: true,
 }
 
 export default MenuBarMenus;

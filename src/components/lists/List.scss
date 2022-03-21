@@ -1,6 +1,5 @@
 @import "../../style";
 
 .list {
-  padding: 0 $space4 0 $space4;
-  box-sizing: border-box;
+  min-width: fit-content;
 }

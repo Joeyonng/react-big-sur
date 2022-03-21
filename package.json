@@ -1,6 +1,6 @@
 {
   "name": "react-big-sur",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
     "rollup": "rollup -c",

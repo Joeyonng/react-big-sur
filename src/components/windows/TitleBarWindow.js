@@ -4,16 +4,17 @@ import clsx from "clsx";
 
 import TrafficLights from "../traffic-lights/TrafficLights";
 
-import * as style from "../../style";
 import "./TitleBarWindow.scss";
+import * as style from "../../style";
 
-const TitleBarWindow = forwardRef((props, ref) => {
+const TitleBarWindow = forwardRef(function TitleBarWindow(props, ref) {
   const {classNames, styles, children, ...curProps} = props
   const {width, height, focus, backgroundColor, onCloseClick, onMinimizeClick, onMaximizeClick, onTitleBarDoubleClick,
     title,  ...rootProps} = curProps
 
   return (
     <div
+      {...rootProps}
       ref={ref}
       className={clsx("title-bar-window", classNames['root'])}
       style={{
@@ -22,7 +23,6 @@ const TitleBarWindow = forwardRef((props, ref) => {
         boxShadow: focus ? style.shadow1 : "none",
         ...styles['root'],
       }}
-      {...rootProps}
     >
       <div
         className="title-bar"

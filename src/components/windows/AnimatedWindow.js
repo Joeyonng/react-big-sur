@@ -1,8 +1,8 @@
 import React, {forwardRef, useEffect, useRef} from "react";
-import isEqual from "react-fast-compare";
 import PropTypes from "prop-types";
-import {useMeasure} from "react-use";
 import {animated, useSpring} from "react-spring";
+import {useEnsuredForwardedRef, useMeasure} from "react-use";
+import isEqual from "react-fast-compare";
 import {Rnd} from "react-rnd";
 
 import "./AnimatedWindow.scss";
@@ -19,7 +19,7 @@ const Window = forwardRef((props, ref) => {
   )
 })
 
-const AnimatedWindow = forwardRef((props, ref) => {
+const AnimatedWindow = forwardRef(function AnimatedWindow(props, ref) {
   const {classNames, styles, children, ...curProps} = props
   const {initial, zIndex, resizeBorder, dragBorder, hidden, animateTo, onFocus, onAnimateStart, onAnimateStop,
     onReshapeStart, onReshapeStop, ...rootProps} = curProps
@@ -65,16 +65,13 @@ const AnimatedWindow = forwardRef((props, ref) => {
     prevAnimateTo.current = animateTo;
   }, [animateTo])
 
-  let rndRef = useRef(null);
+  let rndRef = useEnsuredForwardedRef(ref);
   let dragRef = useRef(null);
-  // TODO useEnsuredForwardedRef
-  useEffect(() => {
-    if (ref) ref.current = rndRef.current
-  }, [ref, rndRef])
 
   const AnimatedWindow = animated(Window);
   return (
     <AnimatedWindow
+      {...rootProps}
       ref={rndRef}
       className="animated-window"
       style={{
@@ -88,15 +85,15 @@ const AnimatedWindow = forwardRef((props, ref) => {
       onMouseDown={() => {
         if (onFocus !== undefined) onFocus();
       }}
-      onDragStart={(e, d) => {
-        e.stopPropagation();
+      onDragStart={(event, d) => {
+        event.stopPropagation();
 
         dragRef.current = {...dragRef.current, x: d.x, y: d.y};
 
         if (onReshapeStart) onReshapeStart({x: spring.x.get(), y: spring.y.get(), h: spring.h.get(), w: spring.w.get()});
       }}
-      onDragStop={(e, d) => {
-        e.stopPropagation();
+      onDragStop={(event, d) => {
+        event.stopPropagation();
 
         // If the window has no position changed
         if (d.x - dragRef.current.x === 0 && d.y - dragRef.current.y === 0) return;
@@ -137,8 +134,8 @@ const AnimatedWindow = forwardRef((props, ref) => {
 
         if (onReshapeStop) onReshapeStop({x: spring.x.get(), y: spring.y.get(), h: spring.h.get(), w: spring.w.get()});
       }}
-      onResizeStart={(e, dir, refToElement) => {
-        e.stopPropagation();
+      onResizeStart={(event, dir, refToElement) => {
+        event.stopPropagation();
 
         if (spring.w === undefined || spring.h === undefined) {
           springApi.set({w: innerMeasure.width, h: innerMeasure.height});
@@ -146,8 +143,8 @@ const AnimatedWindow = forwardRef((props, ref) => {
 
         if (onReshapeStart) onReshapeStart({x: spring.x.get(), y: spring.y.get(), h: spring.h.get(), w: spring.w.get()});
       }}
-      onResize={(e, dir, ref, delta, position) => {
-        e.stopPropagation();
+      onResize={(event, dir, ref, delta, position) => {
+        event.stopPropagation();
 
         // Focus the window when resizer is clicked
         if (onFocus !== undefined) onFocus();
@@ -202,7 +199,6 @@ const AnimatedWindow = forwardRef((props, ref) => {
         left: {"cursor": "w-resize"},
         right: {"cursor": "w-resize"},
       }}
-      {...rootProps}
     >
       <div
         ref={innerMeasureRef}

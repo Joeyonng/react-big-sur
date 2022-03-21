@@ -6,22 +6,22 @@ import './ListItem.scss';
 
 const SIZES = {
   'large': {
-    height: style.height5,
+    height: style.length5,
     space: style.space6,
     font: style.font4,
-    iconSize: style.height7,
+    iconSize: style.length7,
   },
   'medium': {
-    height: style.height6,
+    height: style.length6,
     space: style.space7,
     font: style.font5,
-    iconSize: style.height11,
+    iconSize: style.length11,
   },
   'small': {
-    height: style.height9,
+    height: style.length9,
     space: style.space7,
     font: style.font6,
-    iconSize: style.height11,
+    iconSize: style.length11,
   }
 }
 
@@ -58,53 +58,65 @@ const VARIANTS = {
   },
 }
 
-const ListItem = forwardRef((props, ref) => {
+const ListItem = forwardRef(function ListItem(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
-  const {size, variant, noPadding, primary, secondary, icon, tail, ...rootProps} = curProps;
+  const {size, variant, noPadding, primary, secondary, icon, tail, primaryWeight, disabled, ...rootProps} = curProps;
 
   return (
     <div
+      {...rootProps}
       ref={ref}
       className="list-item"
       style={{
-        height: secondary ? style.height4 : SIZES[size].height,
+        height: secondary ? style.length4 : SIZES[size].height,
         padding: noPadding ? "0 0 0 0" : `0 ${style.space4} 0 ${style.space4}`,
         color: VARIANTS[variant].color,
         backgroundColor: VARIANTS[variant].backgroundColor,
+        pointerEvents: disabled ? "none" : "initial",
       }}
-      {...rootProps}
     >
       {!icon ? null :
         <div
           className="list-item-icon"
           style={{
-            width: secondary ? style.height7 : SIZES[size].iconSize,
-            height: secondary ? style.height7 : SIZES[size].iconSize,
             margin: `0 ${secondary ? style.space5 : SIZES[size].space} 0 0`,
+            pointerEvents: disabled ? "none" : "initial",
           }}
         >
-          {icon}
+          {React.Children.toArray(icon).filter(Boolean).map((item) =>
+            React.cloneElement(item, {
+              style: {
+                width: secondary ? style.length7 : SIZES[size].iconSize,
+                height: secondary ? style.length7 : SIZES[size].iconSize,
+              }
+            })
+          )}
         </div>
       }
 
-      <div className="list-item-main">
+      <div
+        className="list-item-main"
+        style={{
+          pointerEvents: disabled ? "none" : "initial",
+        }}
+      >
         <div
           className="text-item-row"
           style={{
             color: VARIANTS[variant].primaryColor,
             fontSize: secondary ? style.font4 : SIZES[size].font,
-            fontWeight: style.fontWeight4,
+            fontWeight: {bold: style.fontWeight1, normal: style.fontWeight2, thin: style.fontWeight3}[primaryWeight],
           }}
         >
           {primary}
         </div>
+
         {!secondary ? null :
           <div
             className="text-item-row"
             style={{
               color: VARIANTS[variant].secondaryColor,
               fontSize: style.font6,
-              fontWeight: style.fontWeight4,
             }}
           >
             {secondary}
@@ -113,7 +125,12 @@ const ListItem = forwardRef((props, ref) => {
       </div>
 
       {!tail ? null :
-        <div className="list-item-tail">
+        <div
+          className="list-item-tail"
+          style={{
+            pointerEvents: disabled ? "none" : "initial",
+          }}
+        >
           {tail}
         </div>
       }
@@ -136,12 +153,18 @@ ListItem.propTypes = {
   icon: PropTypes.node,
   /** Tail of the list item */
   tail: PropTypes.node,
+  /** The font weight of the primary text. */
+  primaryWeight: PropTypes.oneOf(['bold', 'normal', 'thin']),
+  /** If True, the listItem is disabled. */
+  disabled: PropTypes.bool,
 }
 
 ListItem.defaultProps = {
   size: 'medium',
   variant: 'normal',
   noPadding: false,
+  primaryWeight: 'normal',
+  disabled: false,
 }
 
 export default ListItem;

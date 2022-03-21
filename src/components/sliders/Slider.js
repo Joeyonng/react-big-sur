@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import "./Slider.scss"
 import * as style from "../../style";
 
-const Slider = forwardRef((props, ref) => {
+const Slider = forwardRef(function Slider(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {variant, minValue, maxValue, defaultValue, header, onChange, ...rootProps} = curProps;
 
@@ -18,17 +18,20 @@ const Slider = forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div className="slider-container">
+    <div
+      ref={ref}
+      className="slider-container"
+    >
       <div
+        {...rootProps}
         ref={onSliderRefChange}
         className={`slider-track-${variant}`}
-        {...rootProps}
       >
         <div
           className="slider-fill"
           style={{
             width: state.sliderRef === null ? 0 : state.value / 100
-              * (state.sliderRef.offsetWidth - style.rmPx(style.height10) - 2) + style.rmPx(style.height10)
+              * (state.sliderRef.offsetWidth - style.delPx(style.length10) - 2) + style.delPx(style.length10)
           }}
         />
 
@@ -45,8 +48,8 @@ const Slider = forwardRef((props, ref) => {
           }}
         />
 
-        {variant === 'small' ? null : React.Children.map(header, (item) => (
-          React.cloneElement(header, {
+        {variant === 'small' ? null : React.Children.toArray(header).filter(Boolean).map((item) => (
+          React.cloneElement(item, {
             className: "slider-header"
           })
         ))}

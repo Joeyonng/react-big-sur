@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import "./ListHeader.scss";
 
-const ListHeader = forwardRef((props, ref) => {
+const ListHeader = forwardRef(function ListHeader(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {title, tail, hideTail, ...rootProps} = curProps;
 
@@ -13,6 +13,8 @@ const ListHeader = forwardRef((props, ref) => {
 
   return (
     <div
+      {...rootProps}
+      ref={ref}
       className="list-header"
       onMouseEnter={(e) => {
         setState({...state, headerHover: true})
@@ -22,7 +24,6 @@ const ListHeader = forwardRef((props, ref) => {
         setState({...state, headerHover: false})
         if (rootProps.onMouseLeave) rootProps.onMouseLeave(e)
       }}
-      {...rootProps}
     >
       <div className="list-header-title">
         {title}

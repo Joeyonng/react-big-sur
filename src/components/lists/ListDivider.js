@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import * as style from "../../style";
 import './ListDivider.scss';
 
-const ListDivider = forwardRef((props, ref) => {
+const ListDivider = forwardRef(function ListDivider(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {narrow} = curProps;
 

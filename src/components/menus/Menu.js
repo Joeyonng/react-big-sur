@@ -1,49 +1,63 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useEffect} from 'react';
 import PropTypes from "prop-types";
+import {useEnsuredForwardedRef} from "react-use";
 
-import List from "../lists/List";
-import MenuItem from "./MenuItem";
-import MenuSelection from "./MenuSelection";
+import Popover from "../popovers/Popover";
 
 import './Menu.scss';
 
-const Menu = forwardRef((props, ref) => {
+const Menu = forwardRef(function Menu(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
-  const {width, size, ...rootProps} = curProps;
+  const {open, onClickInside, onClickOutside, ...rootProps} = curProps;
+
+  const menuRef = useEnsuredForwardedRef(ref);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (open && menuRef.current) {
+        if (!menuRef.current.contains(event.target) && onClickOutside) onClickOutside(event);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  })
 
   return (
-    <div
-      className="menu"
+    <Popover
       {...rootProps}
+      ref={menuRef}
+      open={open}
     >
-      <List
-        width={width}
+      <div
+        className="menu"
+        onClick={(event) => {
+          if (event.currentTarget !== event.target && onClickInside) onClickInside(event);
+        }}
       >
-        {React.Children.map(children, item => {
-          if (item.type !== MenuItem && item.type !== MenuSelection) return item;
-
-          let newProps = Object.assign({}, item.props);
-          if (size) newProps['size'] = size;
-
-          return React.cloneElement(item, newProps)
-        })}
-      </List>
-    </div>
+        {children}
+      </div>
+    </Popover>
   )
 });
 
 Menu.propTypes = {
-  /** The width of the menu. */
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  /** The size of the menu items in the menu. */
-  size: PropTypes.oneOf(['large', 'medium', 'small']),
-  /** The label of the menu to be appeared in MenuBarMenus. */
-  label: PropTypes.oneOfType([PropTypes.string, PropTypes.elementType])
+  /** If True, Menu is shown. */
+  open: PropTypes.bool,
+  /**
+   * Callback function fired when a click is detected inside the menu.
+   * Signature: onClickInside(event: MouseEvent) => void.
+   */
+  onClickInside: PropTypes.func,
+  /**
+   * Callback function fired when a click is detected outside the menu.
+   * Signature: onClickOutside(event: MouseEvent) => void.
+   */
+  onClickOutside: PropTypes.func,
 }
 
 Menu.defaultProps = {
-  width: "fit-content",
-  size: "small",
+  open: false,
 }
 
 export default Menu;

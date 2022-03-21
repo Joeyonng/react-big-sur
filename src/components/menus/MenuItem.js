@@ -1,57 +1,55 @@
 import React, {forwardRef, useRef, useState} from "react";
 import PropTypes from "prop-types";
+import {useEnsuredForwardedRef} from "react-use";
 
 import ListItem from "../lists/ListItem";
-import Popover from "../popovers/Popover";
 
 import * as style from "../../style";
+import "./MenuItem.scss";
 
-const MenuItem = forwardRef((props, ref) => {
+const MenuItem = forwardRef(function MenuItem(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
-  const {size, primary, icon, tail, ...rootProps} = curProps;
+  const {size, primary, icon, tail, disabled, ...rootProps} = curProps;
+
+  const menu = children === undefined ? null : React.Children.only(children);
 
   const [state, setState] = useState({
     menuOpen: false,
     hover: false,
   });
 
-  const listItemRef = useRef(null);
-
+  const menuRef = useEnsuredForwardedRef(ref);
   return (
     <div
-      ref={ref}
       onMouseLeave={() => {
         setState({...state, hover: false, menuOpen: false})
         if (rootProps.onMouseLeave) rootProps.onMouseLeave();
       }}
-      {...rootProps}
     >
       <ListItem
-        ref={listItemRef}
+        {...rootProps}
+        ref={menuRef}
         size={size}
-        variant={state.hover ? "primary" : (children && state.menuOpen) ? "secondary" : "normal"}
+        variant={disabled ? "disabled" : (state.hover ? "primary" : (children && state.menuOpen ? "subdued" : "normal"))}
         primary={primary}
         icon={icon}
         tail={tail}
-        onMouseEnter={() => {
+        onMouseOver={() => {
           setState({...state, hover: true, menuOpen: true})
         }}
         onMouseLeave={() => {
           setState({...state, hover: false})
         }}
+        disabled={disabled}
       />
 
-      <Popover
-        open={state.menuOpen}
-        anchorEl={listItemRef.current}
-        anchorOriginX='right'
-        anchorOriginY='top'
-        offset={{
-          top: -style.rmPx(style.space7)
-        }}
-      >
-        {children}
-      </Popover>
+      {!menu ? null : React.cloneElement(menu, {
+        open: state.menuOpen,
+        anchorEl: menuRef.current,
+        anchorOriginX: 'right',
+        anchorOriginY: 'top',
+        offset: {top: -style.delPx(style.space7)},
+      })}
     </div>
   )
 });
@@ -65,6 +63,8 @@ MenuItem.propTypes = {
   icon: PropTypes.node,
   /** Tail of the menu item */
   tail: PropTypes.node,
+  /** If True, the menuItem is disabled. */
+  disabled: PropTypes.bool,
 }
 
 MenuItem.defaultProps = {

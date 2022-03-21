@@ -2,7 +2,7 @@ import React, {forwardRef} from "react";
 
 import './MenuDivider.scss';
 
-const MenuDivider = forwardRef((props, ref) => {
+const MenuDivider = forwardRef(function MenuDivider(props, ref) {
   return (
     <div
       ref={ref}
@@ -10,6 +10,12 @@ const MenuDivider = forwardRef((props, ref) => {
     />
   )
 });
+
+MenuDivider.propTypes = {
+}
+
+MenuDivider.defaultProps = {
+}
 
 export default MenuDivider;
 

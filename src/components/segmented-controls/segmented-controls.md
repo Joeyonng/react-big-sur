@@ -1,7 +1,11 @@
-The content of each `Segment` can be texts.
+### `Segments` implements [Segmented Controls][1].
+[1]: https://developer.apple.com/design/human-interface-guidelines/macos/selectors/segmented-controls/
+
+`Segments` is composed of `Segment`s. The content of each `Segment` can be texts or icons.
+
 ```jsx
-import Segments from "./Segments";
-import Segment from "./Segment";
+import {Segments, Segment} from "react-big-sur";
+import {Star, Bookmark} from "react-feather";
 
 <Segments
   defaultIndex={1}
@@ -9,23 +13,6 @@ import Segment from "./Segment";
 >
   <Segment>First</Segment>
   <Segment>Second</Segment>
-  <Segment>Third</Segment>
-  <Segment>Fourth</Segment>
-</Segments>
-```
-
-The content of each `Segment` can also be Icons.
-```jsx
-import Segments from "./Segments";
-import Segment from "./Segment";
-import {X, Calendar, Star, Bookmark} from "react-feather";
-
-<Segments
-  defaultIndex={1}
-  onChange={(prevIndex, curIndex) => console.log(prevIndex, curIndex)}
->
-  <Segment><X/></Segment>
-  <Segment><Calendar/></Segment>
   <Segment><Star/></Segment>
   <Segment><Bookmark/></Segment>
 </Segments>

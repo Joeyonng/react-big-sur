@@ -1,23 +1,25 @@
 import React, {forwardRef} from "react";
 import PropTypes from "prop-types";
 
-import "./List.scss";
 import ListItem from "./ListItem";
 
-const List = forwardRef((props, ref) => {
+import "./List.scss";
+
+const List = forwardRef(function List(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {width, size, variant, noPadding, ...rootProps} = curProps;
 
   return (
     <div
+      {...rootProps}
       ref={ref}
+      className="list"
       style={{
         width: width,
         ...rootProps.style,
       }}
-      {...rootProps}
     >
-      {React.Children.map(children, item => {
+      {React.Children.toArray(children).filter(Boolean).map((item) => {
         if (item.type !== ListItem) return item;
 
         let newProps = Object.assign({}, item.props);

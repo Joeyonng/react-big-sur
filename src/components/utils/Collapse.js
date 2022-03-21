@@ -1,11 +1,11 @@
 import React, {forwardRef, useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import {useMeasure} from "react-use";
 import {useSpring, animated, config} from "react-spring";
+import {useMeasure} from "react-use";
 
 import "./Collapse.scss";
 
-const Collapse = forwardRef((props, ref) => {
+const Collapse = forwardRef(function Collapse(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {open, ...rootProps} = curProps;
 
@@ -26,12 +26,12 @@ const Collapse = forwardRef((props, ref) => {
 
   return (
     <animated.div
+      {...rootProps}
       ref={ref}
       className="collapse-container"
       style={{
         height: spring.contentHeight,
       }}
-      {...rootProps}
     >
       <animated.div
         ref={contentMeasureRef}
@@ -44,5 +44,15 @@ const Collapse = forwardRef((props, ref) => {
     </animated.div>
   )
 });
+
+Collapse.propTypes = {
+  /** If True, Collapse is not collapsed. */
+  open: PropTypes.bool,
+}
+
+Collapse.defaultProps = {
+  open: false,
+}
+
 
 export default Collapse;

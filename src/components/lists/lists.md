@@ -3,6 +3,7 @@ A simple `List`.
 ```jsx
 import {List, ListItem, ListHeader, ListDivider} from "react-big-sur";
 import {GitHub, Star} from "react-feather";
+import {settings} from "../../icons/index";
 
 <div className="row">
   <List width={200}>
@@ -13,12 +14,13 @@ import {GitHub, Star} from "react-feather";
     <ListItem primary="Divided by a narrow ListDivider"/>
     <ListDivider narrow/>
     <ListItem primary="Star Icon" icon={<Star/>}/>
-    <ListItem primary="Github Icon" icon={<GitHub/>}/>
+    <ListItem primary="Image Icon" icon={<img src={settings}/>}/>
   </List>
 </div>
 ```
 
-A special type of list that is collapsable.
+A special type of list that is collapsable is `DropdownList`.
+
 ```jsx
 import {DropdownList, ListItem, ListDivider} from "react-big-sur";
 import {GitHub, Star} from "react-feather";
@@ -67,7 +69,7 @@ const variants = ['primary', 'secondary', 'subdued', 'normal', 'disabled'];
 You can also add a `secondary` text, in which the `size` prop will be ignored.
 
 ```jsx
-import {List, ListItem, IconButton} from "react-big-sur";
+import {List, ListItem, HelpButton} from "react-big-sur";
 import {Star} from "react-feather";
 
 const variants = ['primary', 'secondary', 'subdued', 'normal', 'disabled'];
@@ -81,7 +83,7 @@ const variants = ['primary', 'secondary', 'subdued', 'normal', 'disabled'];
         variant={variant}
         primary={variant}
         secondary="ignored size large"
-        icon={<IconButton><Star/></IconButton>}
+        icon={<HelpButton><Star/></HelpButton>}
       />
     ))}
   </List>
@@ -94,7 +96,31 @@ const variants = ['primary', 'secondary', 'subdued', 'normal', 'disabled'];
         variant={variant}
         primary={variant}
         secondary="ignored size small"
-        icon={<IconButton><Star/></IconButton>}
+        icon={<HelpButton><Star/></HelpButton>}
+      />
+    ))}
+  </List>
+</div>
+```
+
+You can change the font weight of the primary text by using `primaryWeight` prop.
+
+```jsx
+import {List, ListItem, HelpButton} from "react-big-sur";
+import {Star} from "react-feather";
+
+const weights = ['bold', 'normal', 'thin'];
+
+<div className="row">
+  <List width={200}>
+    {weights.map((weight, index) => (
+      <ListItem
+        key={index}
+        size="large"
+        primary={weight}
+        primaryWeight={weight}
+        secondary="no style on secondary text"
+        icon={<HelpButton><Star/></HelpButton>}
       />
     ))}
   </List>
@@ -105,7 +131,7 @@ Arbitrary component can be appended to the end of a `ListItem` by using `tail` p
 need to properly style it to fit in `ListItem`.
 
 ```jsx
-import {List, ListItem, IconButton} from "react-big-sur";
+import {List, ListItem, HelpButton} from "react-big-sur";
 import {Star, ChevronRight} from "react-feather";
 
 <div className="row">
@@ -114,14 +140,14 @@ import {Star, ChevronRight} from "react-feather";
       size="large"
       variant="normal"
       primary="ListItem with a icon tail"
-      icon={<IconButton><Star/></IconButton>}
+      icon={<HelpButton><Star/></HelpButton>}
       tail={<ChevronRight width={20} height={20}/>}
     />
     <ListItem
       size="large"
       variant="normal"
       primary="ListItem with a text tail"
-      icon={<IconButton><Star/></IconButton>}
+      icon={<HelpButton><Star/></HelpButton>}
       tail={<div style={{backgroundColor: "yellow"}}>Text tail</div>}
     />
   </List>
@@ -131,7 +157,7 @@ import {Star, ChevronRight} from "react-feather";
 You can remove the paddings on the sides of the `ListItem` using `noPadding` prop.
 
 ```jsx
-import {List, ListItem, IconButton} from "react-big-sur";
+import {List, ListItem, HelpButton} from "react-big-sur";
 import {Star, ChevronRight} from "react-feather";
 
 <div className="row">
@@ -141,14 +167,14 @@ import {Star, ChevronRight} from "react-feather";
       variant="secondary"
       noPadding={true}
       primary="ListItem without side paddings"
-      icon={<IconButton><Star/></IconButton>}
+      icon={<HelpButton><Star/></HelpButton>}
     />
     <ListItem
       size="large"
       variant="secondary"
       noPadding={false}
       primary="ListItem without side paddings"
-      icon={<IconButton><Star/></IconButton>}
+      icon={<HelpButton><Star/></HelpButton>}
     />
     <ListItem
       size="large"

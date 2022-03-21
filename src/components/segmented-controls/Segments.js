@@ -1,9 +1,9 @@
-import React, {forwardRef, useState} from "react";
+import React, {forwardRef, Fragment, useState} from "react";
 import PropTypes from "prop-types";
 
 import "./Segments.scss"
 
-const Segments = forwardRef((props, ref) => {
+const Segments = forwardRef(function Segments(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
   const {defaultIndex, onChange, ...rootProps} = curProps;
 
@@ -13,12 +13,12 @@ const Segments = forwardRef((props, ref) => {
 
   return (
     <div
+      {...rootProps}
       ref={ref}
       className="segments"
-      {...rootProps}
     >
-      {React.Children.map(children, (item, index) => (
-        <>
+      {React.Children.toArray(children).filter(Boolean).map((item, index) => (
+        <Fragment key={index}>
           {React.cloneElement(item, {
             selected: (index === state.selectedIndex),
             onSelect: () => {
@@ -33,7 +33,7 @@ const Segments = forwardRef((props, ref) => {
                 index === state.selectedIndex - 1 || index === state.selectedIndex) ? "hidden" : "visible",
             }}
           />
-        </>
+        </Fragment>
       ))}
     </div>
   )

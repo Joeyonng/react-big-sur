@@ -2,9 +2,9 @@
 
 `TitleBarWindow` contains the title bar, which you can change using `title` prop, while `ToolbarWindow` contains a 
 fully customized toolbar, where you can replace with your own component using `toolbar` prop.
+
 ```jsx
-import TitleBarWindow from "./TitleBarWindow";
-import ToolbarWindow from "./ToolbarWindow";
+import {TitleBarWindow, ToolbarWindow} from "react-big-sur";
 
 <div className="row">
   <TitleBarWindow title="Title">
@@ -22,8 +22,9 @@ import ToolbarWindow from "./ToolbarWindow";
 ```
 
 You can optionally add a sidebar component to `ToolbarWindow` using `sidebar` prop.
+
 ```jsx
-import ToolbarWindow from "./ToolbarWindow";
+import {ToolbarWindow} from "react-big-sur";
 
 <div className="row">
   <ToolbarWindow
@@ -39,9 +40,10 @@ import ToolbarWindow from "./ToolbarWindow";
 
 `TitleBarWindow` and `ToolbarWindow` are built in with focused and unfocused styles. The title bar, toolbar, sidebar 
 and traffic lights will be greyed out if unfocused.
+
 ```jsx
-import ToolbarWindow from "./ToolbarWindow";
 import {useState} from "react";
+import {ToolbarWindow} from "react-big-sur";
 
 const [focus, setFocus] = useState(false);
 
@@ -63,9 +65,10 @@ const [focus, setFocus] = useState(false);
 
 You can pass in different callback functions to `TitleBarWindow` and `ToolbarWindow` to interact with built-in UI such
 as the traffic lights and title bar/toolbar.
+
 ```jsx
 import {useState} from "react";
-import TitleBarWindow from "./TitleBarWindow";
+import {TitleBarWindow} from "react-big-sur";
 
 const [message, setMessage] = useState('Windows content here');
 
@@ -86,15 +89,16 @@ const [message, setMessage] = useState('Windows content here');
 
 ### AnimatedWindow makes the children a desktop application window.
 
-AnimatedWindow is draggable and resizable, which are achieved by [react-rnd](react-rnd) under the hood.
-All other props not specified will be directly passed to `Rnd` component. Please see [react-rnd](react-rnd) if you want
+AnimatedWindow is draggable and resizable, which are achieved by [react-rnd][1] under the hood.
+All other props not specified will be directly passed to `Rnd` component. Please see [react-rnd][1] if you want
 more control of the component. In this example, `cancel` prop is directly passed to `Rnd` so that only title bar can be
 used to drag the windows.
 
+[1]: https://github.com/bokuweb/react-rnd/
+
 ```jsx
 import {useState} from "react";
-import AnimatedWindow from "./AnimatedWindow";
-import TitleBarWindow from "./TitleBarWindow";
+import {TitleBarWindow, AnimatedWindow} from "react-big-sur";
 
 const [message, setMessage] = useState('I am draggable and resizable!');
 
@@ -129,10 +133,9 @@ how the application window is bounded by the desktop in macOS Big Sur.
 3. By default, the window is bounded by the corresponding edge (The `top` boundary bounds the top edge of the window).
    If `reversed` is `true`, the window is defined by using the opposite edge of the window (The `top` boundary bounds the
    bottom edge of the window).
-
+4. 
 ```jsx
-import AnimatedWindow from "./AnimatedWindow";
-import TitleBarWindow from "./TitleBarWindow";
+import {TitleBarWindow, AnimatedWindow} from "react-big-sur";
 
 <div className="canvas">
   <AnimatedWindow
@@ -155,10 +158,10 @@ import TitleBarWindow from "./TitleBarWindow";
 AnimatedWindow also provides a way to animate between different positions and sizes. If `animateTo` prop is changed,
 AnimatedWindow will animate nicely to the position and size provided in `animateTo` object. Use `onAnimateStart` and
 `onAnimateStop` callback functions to get the old and new position and size.
+
 ```jsx
 import {useState} from "react";
-import AnimatedWindow from "./AnimatedWindow";
-import TitleBarWindow from "./TitleBarWindow";
+import {TitleBarWindow, AnimatedWindow} from "react-big-sur";
 
 const [windownState, setWindowState] = useState('norm');
 const [message, setMessage] = useState('Click on traffic lights to see animations!');
@@ -192,11 +195,10 @@ let positionSize = {
 
 AnimatedWindow is usually integrated with ToolbarWindow and TitleBarWindow to create macOS Big Sur desktop with multiple
 applications. You can use `zIndex` and `focus` props to arrange their order.
+
 ```jsx
 import {useState} from "react";
-import AnimatedWindow from "./AnimatedWindow";
-import TitleBarWindow from "./TitleBarWindow";
-import ToolbarWindow from "./ToolbarWindow";
+import {TitleBarWindow, ToolbarWindow, AnimatedWindow} from "react-big-sur";
 
 const [zIndex0, setZIndex0] = useState(0);
 const [zIndex1, setZIndex1] = useState(1);
@@ -233,5 +235,3 @@ const maxZIndex = Math.max(zIndex0, zIndex1);
   </AnimatedWindow>
 </div>
 ```
-
-[react-rnd]: https://github.com/bokuweb/react-rnd

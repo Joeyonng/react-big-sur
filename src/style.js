@@ -3,7 +3,7 @@ export const rgba = (rgb, opacity) => {
   return `rgba(${numbers[0]}, ${numbers[1]}, ${numbers[2]}, ${opacity})`;
 }
 
-export const rmPx = (px) => {
+export const delPx = (px) => {
   if (px.slice(-2).toLowerCase() !== 'px') {
     return px;
   }
@@ -39,21 +39,21 @@ export const radius2 = "10px";
 export const radius3 = "6px";
 export const radius4 = "4px";
 
-export const height1 = "80px";
-export const height2 = "64px";
-export const height3 = "48px";
-export const height4 = "38px";
-export const height5 = "32px";
-export const height6 = "28px";
-export const height7 = "26px";
-export const height8 = "24px";
-export const height9 = "22px";
-export const height10 = "20px";
-export const height11 = "16px";
-export const height12 = "14px";
-export const height13 = "12px";
-export const height14 = "6px";
-export const height15 = "4px";
+export const length1 = "80px";
+export const length2 = "64px";
+export const length3 = "48px";
+export const length4 = "38px";
+export const length5 = "32px";
+export const length6 = "28px";
+export const length7 = "26px";
+export const length8 = "24px";
+export const length9 = "22px";
+export const length10 = "20px";
+export const length11 = "16px";
+export const length12 = "14px";
+export const length13 = "12px";
+export const length14 = "6px";
+export const length15 = "4px";
 
 export const space1 = "18px";
 export const space2 = "14px";
@@ -73,13 +73,12 @@ export const font6 = "11px";
 export const font7 = "8px";
 
 export const icon1 = "16px";
-export const icon2 = "8px";
+export const icon2 = "12px";
+export const icon3 = "8px";
 
-export const fontWeight1 = "100";
-export const fontWeight2 = "300";
-export const fontWeight3 = "400";
-export const fontWeight4 = "500";
-export const fontWeight5 = "700";
+export const fontWeight1 = "700";
+export const fontWeight2 = "400";
+export const fontWeight3 = "100";
 
 export const titleBarHeight = "28px";
 export const toolbarHeight = "52px";
@@ -91,7 +90,7 @@ export const notificationWidth = "346px";
 export const widgetGap = "16px";
 export const widgetLarge = "344px";
 export const widgetSmall = "164px";
-export const widgetsWidth = `${rmPx(notificationWidth) + 2 * rmPx(widgetGap)}px`;
+export const widgetsWidth = `${delPx(notificationWidth) + 2 * delPx(widgetGap)}px`;
 export const widgetsHeight = `calc(100vh  - ${menuBarHeight} - ${dockHeight})`;
 
 export const minAppZIndex = "0";

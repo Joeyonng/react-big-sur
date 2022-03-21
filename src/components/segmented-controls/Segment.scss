@@ -2,7 +2,7 @@
 
 .segment {
   width: fit-content;
-  height: $height10;
+  height: $length10;
   padding: 0 $space4 0 $space4;
   box-sizing: border-box;
   flex: 1 1 0;
@@ -14,15 +14,15 @@
 
   border-radius: $radius4;
 
-  line-height: $height12;
+  line-height: $length12;
   font-size: $font5;
 
   white-space: nowrap;
   user-select: none;
 
   .segment-content {
-    width: $height12;
-    height: $height12;
+    width: $length12;
+    height: $length12;
   }
 
   &.selected {

@@ -2,7 +2,7 @@
 
 .slider-container {
   width: 100%;
-  height: $height8;
+  height: $length8;
 
   display: flex;
   flex-direction: column;
@@ -11,20 +11,20 @@
 }
 
 .slider-track-large {
-  height: $height10 + 2;
+  height: $length10 + 2;
   position: relative;
 
   background-color: $grey3;
-  border-radius: $height10 / 2 + 1;
+  border-radius: $length10 / 2 + 1;
 
   .slider-fill {
-    height: $height10;
+    height: $length10;
     position: absolute;
     top: $unitPx;
     left: $unitPx;
 
     background-color: $white;
-    border-radius: $height10 / 2;
+    border-radius: $length10 / 2;
 
     pointer-events: none;
   }
@@ -42,8 +42,8 @@
     appearance: none;
 
     &::-webkit-slider-thumb {
-      width: $height10;
-      height: $height10;
+      width: $length10;
+      height: $length10;
       border: $border;
       box-sizing: border-box;
 
@@ -55,8 +55,8 @@
   }
 
   .slider-header {
-    width: $height13;
-    height: $height13;
+    width: $length13;
+    height: $length13;
     margin: $space7;
     box-sizing: border-box;
     position: absolute;
@@ -69,18 +69,18 @@
 
 .slider-track-small {
   margin: 0 $unitPx 0 $unitPx;
-  height: $height15;
+  height: $length15;
   position: relative;
 
   background-color: $grey2;
-  border-radius: $height15 / 2;
+  border-radius: $length15 / 2;
 
   .slider-fill {
-    height: $height15;
+    height: $length15;
     position: absolute;
 
     background-color: $blue;
-    border-radius: $height15 / 2;
+    border-radius: $length15 / 2;
 
     pointer-events: none;
   }
@@ -96,8 +96,8 @@
     appearance: none;
 
     &::-webkit-slider-thumb {
-      width: $height10;
-      height: $height10;
+      width: $length10;
+      height: $length10;
       border: $border;
       box-sizing: border-box;
 

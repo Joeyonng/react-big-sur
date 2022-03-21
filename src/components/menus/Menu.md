@@ -1,1 +1,3 @@
-Please see [Menus](http://localhost:6060/#/Menus) for usage examples.
+```jsx static
+import {Menu} from "react-big-sur";
+```
