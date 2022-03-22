@@ -8,7 +8,7 @@ import * as style from "../../style";
 
 const NotificationCenter = forwardRef(function NotificationCenter(props, ref) {
   const {classNames, styles, children, ...curProps} = props;
-  const {open, left, offsetTop, visibleHeight, fadingHeight, notifications, ...rootProps} = curProps;
+  const {open, left, fadingHeight, notifications, ...rootProps} = curProps;
 
   const notificationCenterRef = useEnsuredForwardedRef(ref);
   const spring = useSpring({
@@ -52,9 +52,18 @@ const NotificationCenter = forwardRef(function NotificationCenter(props, ref) {
             `${style.rgba(style.white, 1)} ${style.delPx(style.widgetGap) / 2 + fadingHeight}px, ` +
             `${style.rgba(style.white, 1)} calc(100% - ${style.delPx(style.widgetGap) / 2 + fadingHeight}px), ` +
             `${style.rgba(style.white, 0)} calc(100% - ${style.delPx(style.widgetGap) / 2}px)`,
+          Mask: `linear-gradient(to bottom, ` +
+            `${style.rgba(style.white, 0)} ${style.delPx(style.widgetGap) / 2}px, ` +
+            `${style.rgba(style.white, 1)} ${style.delPx(style.widgetGap) / 2 + fadingHeight}px, ` +
+            `${style.rgba(style.white, 1)} calc(100% - ${style.delPx(style.widgetGap) / 2 + fadingHeight}px), ` +
+            `${style.rgba(style.white, 0)} calc(100% - ${style.delPx(style.widgetGap) / 2}px)`,
         }}
       >
-        {!notifications ? null : notifications}
+        {!notifications ? null :
+          React.cloneElement(notifications, {
+            horizontal: left ? "left" : "right",
+          })
+        }
 
         <animated.div
           className="widgets-container"
@@ -76,10 +85,6 @@ NotificationCenter.propTypes = {
   open: PropTypes.bool,
   /** If True, NotificationCenter will appear on the left. */
   left: PropTypes.bool,
-  /** The top offset. */
-  offsetTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  /** The height of the visible part of the widget list. */
-  visibleHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   /** The height of the fading parts at the start and end of the widget list. */
   fadingHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   /** The Notifications component. */
@@ -87,8 +92,6 @@ NotificationCenter.propTypes = {
 }
 
 NotificationCenter.defaultProps = {
-  offsetTop: 0,
-  visibleHeight: '100%',
   fadingHeight: 8,
 }
 

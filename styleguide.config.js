@@ -12,7 +12,17 @@ module.exports = {
     'icons': path.resolve(__dirname, 'src', 'icons'),
   },
   styles: path.resolve(__dirname, 'styleguide.styles.js'),
+  styleguideDir: 'build',
+  ribbon: {
+    url: 'https://github.com/Joeyonng/react-big-sur',
+    text: 'GitHub'
+  },
   sections: [
+    {
+      name: 'react-big-sur',
+      sectionDepth: 1,
+      content: './src/introduction.md'
+    },
     {
       name: 'System Capabilities',
       sectionDepth: 2,

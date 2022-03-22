@@ -2,8 +2,10 @@
 [1]: https://developer.apple.com/design/human-interface-guidelines/macos/system-capabilities/notifications/
 [2]: https://developer.apple.com/design/human-interface-guidelines/widgets/overview/introduction/
 
-Notification center consists of two parts: `Notifications` and `Widgets`, which consists of `Notification`s and 
-`Widget`s, respectively.
+The `NotificationCenter` consists of two parts: `Notifications` and `Widgets`, which consists of `Notification`s and 
+`Widget`s, respectively. The position and the height of the `NotificationCenter` is controlled by its container element
+and the prop `left`. By default, `NotificationCenter` will appear on the right side of the container element. If `left` 
+prop is set, then it appears at left side. Since 
 
 ```jsx
 import {useState} from "react";
@@ -46,15 +48,13 @@ const deleteNotification = (prevNotifications, notificationId) => {
 
   <div
     style={{
-      width: "100%",
-      height: "90%",
-      position: "relative",
+      height: "80%",
+      position: "absolute",
+      right: 0,
     }}
   >
     <NotificationCenter
       open={open}
-      offsetTop={32}
-      visibleHeight="90%"
       notifications={
         <Notifications>
           {Object.values(notifications).map((notification, index) => (

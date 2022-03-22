@@ -2,7 +2,7 @@
 
 A React UI component library that is built to simulate **macOS Big Sur**.
 
-Demo:
+Demo and usages: https://joeyonng.github.io/react-big-sur/#/react-big-sur
 
 ### Why
 This project entirely came out from my attempt to build my personal website as a clone of the macOS Big Sur interface. 
@@ -11,7 +11,7 @@ in the early stage of the development (and with high probability will never be f
 
 Currently, this project is entirely for learning purposes, and I highly recommend not to use this library in any 
 real-world applications. This library was never formally tested and may not have support for lots of use cases 
-(Typescript for example). 
+(Typescript, mobile browsers, etc.). 
 
 ### Install
 ```bash

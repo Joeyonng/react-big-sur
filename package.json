@@ -4,8 +4,9 @@
   "description": "",
   "scripts": {
     "rollup": "rollup -c",
+    "pack": "rollup -c && npm pack",
     "guide": "npx styleguidist server",
-    "build": "rollup -c && npm pack"
+    "deploy": "npx styleguidist build && gh-pages -d build"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +22,7 @@
     "babel-loader": "^8.2.3",
     "css-loader": "^6.5.1",
     "framer-motion": "^6.2.4",
+    "gh-pages": "^3.2.3",
     "html-to-image": "^1.9.0",
     "node-sass": "^7.0.1",
     "postcss": "^8.4.5",
@@ -51,6 +53,12 @@
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "react",
+    "macos",
+    "bigsur",
+    "clone"
   ],
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js"

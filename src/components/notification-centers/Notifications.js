@@ -13,13 +13,13 @@ const Notifications = forwardRef(function Notifications(props, ref) {
   const notificationsMap = new WeakMap();
   const transitions = useTransition(React.Children.toArray(children).filter(Boolean).map(child => child), {
     keys: item => item.props.id,
-    from: {x: `${horizontal === "left" ? '' : '-'}${style.notificationWidth}`, y: "0px"},
+    from: {x: `${horizontal === "right" ? '' : '-'}${style.notificationWidth}`, y: "0px"},
     enter: item => async (next) => {
       const ref = notificationsMap.get(item);
       await next({x: "0px", y: `${ref.offsetHeight}px`})
     },
     leave: () => {
-      return {x: `${horizontal === "left" ? '' : '-'}${style.notificationWidth}`, y: "0px"};
+      return {x: `${horizontal === "right" ? '' : '-'}${style.notificationWidth}`, y: "0px"};
     },
     expires: 10,
   });
@@ -30,7 +30,7 @@ const Notifications = forwardRef(function Notifications(props, ref) {
       ref={ref}
       className="notifications"
       style={{
-        flexDirection: vertical === "top" ? "column-reverse" : "column",
+        flexDirection: vertical === "top" ? "column" : "column-reverse",
       }}
     >
       {transitions((spring, item) => {
@@ -43,7 +43,7 @@ const Notifications = forwardRef(function Notifications(props, ref) {
             }}
           >
             <div ref={(ref) => ref && notificationsMap.set(item, ref)}>
-              {React.cloneElement(item, {})}
+              {item}
               <div className="notification-margin"/>
             </div>
           </animated.div>
@@ -54,15 +54,15 @@ const Notifications = forwardRef(function Notifications(props, ref) {
 });
 
 Notifications.propTypes = {
-  /** Left: notifications animation will slide from right to left; right otherwise. */
+  /** Left: notifications animation will slide from left to right; Right: from right to left. */
   horizontal: PropTypes.oneOf(['left', 'right']),
-  /** Top: new notifications will created on top of the list; bottom otherwise. */
+  /** Top: new notifications will created from top to bottom; Bottom: from bottom to top. */
   vertical: PropTypes.oneOf(['top', 'bottom']),
 }
 
 Notifications.defaultProps = {
-  horizontal: 'left',
-  vertical: 'bottom',
+  horizontal: 'right',
+  vertical: 'top',
 }
 
 export default Notifications;
