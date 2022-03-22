@@ -1,15 +1,16 @@
 {
   "name": "react-big-sur",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "scripts": {
-    "rollup": "rollup -c",
-    "pack": "rollup -c && npm pack",
+    "build": "rollup -c",
+    "pack": "npm run build && npm pack",
+    "publish": "npm run build && npm publish",
     "guide": "npx styleguidist server",
     "deploy": "npx styleguidist build && gh-pages -d build"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@babel/plugin-transform-runtime": "^7.17.0",

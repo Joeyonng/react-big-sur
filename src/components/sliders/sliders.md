@@ -4,21 +4,27 @@
 There are 2 variants of `Slider`.
 
 ```jsx
-import Slider from "./Slider";
+import {useState} from "react";
+import {Slider} from "react-big-sur";
+
+const [value, setValue] = useState(50);
 
 <div className="row">
-  <Slider defaultValue={50} variant="large"/>
-  <Slider defaultValue={50} variant="small"/>
+  <Slider value={value} variant="large" onChange={(value) => setValue(value)}/>
+  <Slider value={value} variant="small" onChange={(value) => setValue(value)}/>
 </div>
 ```
 
 You can optionally add a header icon to `Slider` with `variant='large'`.
 
 ```jsx
-import Slider from "./Slider";
+import {useState} from "react";
+import {Slider} from "react-big-sur";
 import {Volume2} from "react-feather";
 
+const [value, setValue] = useState(50);
+
 <div>
-  <Slider defaultValue={50} variant="large" header={<Volume2/>}/>
+  <Slider value={value} variant="large" header={<Volume2/>} onChange={(value) => setValue(value)}/>
 </div>
 ```
